@@ -2,34 +2,44 @@
   "compilerOptions": {
     // 启用增量编译，只编译发生变化的文件，提高编译速度
     "incremental": true,
-    
+
     // 启用项目引用功能，允许TypeScript项目引用其他TypeScript项目
     "composite": true,
 
+    // 模块系统
+    "module": "ESNext",
+
+    // 模块解析策略（bundler 支持 .ts 导入）
+    "moduleResolution": "Bundler",
+
     // 允许导入JSON文件作为模块
     "resolveJsonModule": true,
-    
+
+    // 允许导入 .ts 扩展名（用于 tsdown 配置文件）
+    "allowImportingTsExtensions": true,
     // 启用所有严格类型检查选项
     "strict": true,
-    
+
     // 生成对应的.d.ts声明文件
     "declaration": true,
-    
+
     // 为声明文件生成source map文件
     "declarationMap": true,
-    
+
     // 只生成声明文件，不生成JavaScript文件
     "emitDeclarationOnly": true,
-    
+
+    // 不生成输出文件（使用 tsdown 进行构建）
+    "noEmit": true,
+
     // 当有类型错误时不生成输出文件
     "noEmitOnError": true,
 
     // 允许从没有默认导出的模块中默认导入
     "allowSyntheticDefaultImports": true,
-    
+
     // 启用ES模块与CommonJS模块的互操作性
     "esModuleInterop": true,
-    
     // 跳过库文件的类型检查，提高编译性能
     "skipLibCheck": true
   }

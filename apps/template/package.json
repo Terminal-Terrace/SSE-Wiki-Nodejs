@@ -1,0 +1,21 @@
+{
+  "name": "@sse-wiki/app-template",
+  "type": "module",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Template Koa app for SSE Wiki",
+  "author": "",
+  "license": "ISC",
+  "keywords": [],
+  "scripts": {
+    "build": "tsdown",
+    "dev": "tsdown --watch",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "koa": "^3.0.3"
+  },
+  "devDependencies": {
+    "@types/koa": "^3.0.1"
+  }
+}

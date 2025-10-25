@@ -2,11 +2,15 @@
   "name": "terminal-terrace-nodejs",
   "type": "module",
   "version": "1.0.0",
-  "packageManager": "pnpm@10.18.2",
+  "packageManager": "pnpm@10.19.0",
   "description": "终端露台nodejs大仓",
   "author": "",
   "license": "ISC",
   "scripts": {
+    "build": "pnpm -r --filter './packages/*' run build",
+    "build:apps": "pnpm -r --filter './apps/*' run build",
+    "build:all": "pnpm -r run build",
+    "dev": "pnpm -r --parallel run dev",
     "lint": "eslint --ext .ts,.tsx,.vue . --fix",
     "prepare": "husky",
     "cz": "cz"
