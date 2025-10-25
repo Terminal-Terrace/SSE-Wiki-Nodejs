@@ -1,0 +1,28 @@
+{
+  "name": "terminal-terrace-nodejs",
+  "type": "module",
+  "version": "1.0.0",
+  "packageManager": "pnpm@10.18.2",
+  "description": "终端露台nodejs大仓",
+  "author": "",
+  "license": "ISC",
+  "scripts": {
+    "lint": "eslint --ext .ts,.tsx,.vue . --fix",
+    "prepare": "husky",
+    "cz": "cz"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "^6.0.0",
+    "@commitlint/cli": "^20.1.0",
+    "@commitlint/config-conventional": "^20.0.0",
+    "@types/node": "^24.9.1",
+    "commitizen": "^4.3.1",
+    "cz-conventional-changelog": "^3.3.0",
+    "eslint": "^9.37.0",
+    "eslint-plugin-format": "^1.0.2",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.6",
+    "tsdown": "^0.15.9",
+    "typescript": "^5.9.3"
+  }
+}
