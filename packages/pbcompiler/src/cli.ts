@@ -5,6 +5,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
 import { Command } from 'commander'
+import { readAuthConfig, updateAuthConfig, validateAuthConfig } from './auth-config'
 import { initConfig } from './config'
 import { downloadProtoFile } from './downloader'
 import { protoToTs } from './translate'
@@ -213,6 +214,100 @@ function initCommand(): void {
   console.log('2. 运行 "cpb generate" 生成客户端代码')
 }
 
+/**
+ * login 命令 - 配置 GitHub Token
+ */
+function loginCommand(token: string): void {
+  try {
+    if (!token || token.trim() === '') {
+      console.error('✗ GitHub Token 不能为空')
+      process.exit(1)
+    }
+
+    updateAuthConfig({ githubToken: token })
+    console.log('✓ GitHub Token 已保存')
+    console.log('\n提示: 使用 "cpb config --owner <owner> --repo <repo>" 配置仓库信息')
+  }
+  catch (error) {
+    console.error('✗ 保存 Token 失败:', error instanceof Error ? error.message : error)
+    process.exit(1)
+  }
+}
+
+/**
+ * config 命令 - 配置仓库信息
+ */
+function configCommand(options: { owner?: string, repo?: string, protoDir?: string, show?: boolean }): void {
+  try {
+    // 如果是查看配置
+    if (options.show) {
+      const config = readAuthConfig()
+      console.log('当前配置:')
+      console.log(`  GitHub Token: ${config.githubToken ? `已配置 (${config.githubToken.substring(0, 8)}...)` : '未配置'}`)
+      console.log(`  Repository Owner: ${config.repoOwner || '未配置'}`)
+      console.log(`  Repository Name: ${config.repoName || '未配置'}`)
+      console.log(`  Proto Directory: ${config.protoDir || '/ (根目录)'}`)
+
+      const validation = validateAuthConfig()
+      if (!validation.valid) {
+        console.log(`\n⚠ 配置不完整，缺少: ${validation.missing.join(', ')}`)
+      }
+      else {
+        console.log('\n✓ 配置完整')
+      }
+      return
+    }
+
+    // 更新配置
+    const updates: Partial<{ githubToken: string, repoOwner: string, repoName: string, protoDir: string }> = {}
+    let hasUpdates = false
+
+    if (options.owner) {
+      updates.repoOwner = options.owner
+      hasUpdates = true
+    }
+    if (options.repo) {
+      updates.repoName = options.repo
+      hasUpdates = true
+    }
+    if (options.protoDir !== undefined) {
+      updates.protoDir = options.protoDir
+      hasUpdates = true
+    }
+
+    if (!hasUpdates) {
+      console.log('提示: 使用以下选项之一来配置:')
+      console.log('  --owner <owner>      设置仓库所有者')
+      console.log('  --repo <repo>        设置仓库名')
+      console.log('  --proto-dir <dir>    设置 proto 文件目录（可选）')
+      console.log('  --show               查看当前配置')
+      return
+    }
+
+    updateAuthConfig(updates)
+    console.log('✓ 配置已更新')
+
+    if (options.owner) {
+      console.log(`  Repository Owner: ${options.owner}`)
+    }
+    if (options.repo) {
+      console.log(`  Repository Name: ${options.repo}`)
+    }
+    if (options.protoDir !== undefined) {
+      console.log(`  Proto Directory: ${options.protoDir || '/ (根目录)'}`)
+    }
+
+    const validation = validateAuthConfig()
+    if (!validation.valid) {
+      console.log(`\n提示: 还需要配置: ${validation.missing.join(', ')}`)
+    }
+  }
+  catch (error) {
+    console.error('✗ 配置失败:', error instanceof Error ? error.message : error)
+    process.exit(1)
+  }
+}
+
 // 配置 CLI
 program
   .name('cpb')
@@ -241,6 +336,20 @@ program
   .description('同步/下载所有 proto 文件')
   .option('-c, --config <path>', '配置文件路径', './pb.config.json')
   .action(syncCommand)
+
+program
+  .command('login <token>')
+  .description('配置 GitHub Personal Access Token')
+  .action(loginCommand)
+
+program
+  .command('config')
+  .description('配置 GitHub 仓库信息')
+  .option('--owner <owner>', '设置仓库所有者 (organization 或 username)')
+  .option('--repo <repo>', '设置仓库名')
+  .option('--proto-dir <dir>', '设置 proto 文件在仓库中的目录路径')
+  .option('--show', '查看当前配置')
+  .action(configCommand)
 
 // 解析命令行参数
 program.parse()
