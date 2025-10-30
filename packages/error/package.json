@@ -1,8 +1,8 @@
 {
-  "name": "@sse-wiki/template",
+  "name": "@sse-wiki/error",
   "type": "module",
   "version": "0.0.1",
-  "description": "Logger package for SSE Wiki",
+  "description": "Error handling package for SSE Wiki",
   "author": "",
   "license": "ISC",
   "keywords": [],

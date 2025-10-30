@@ -15,7 +15,7 @@ export interface PbConfig {
  * 固定的生成目录
  * proto 文件和生成的 ts 文件都放在这里
  */
-const GENERATED_DIR = './generated'
+const PROTOBUF_DIR = './protobuf'
 
 /**
  * 配置管理器
@@ -49,12 +49,13 @@ export class ConfigManager {
 
   /**
    * 根据服务名获取 proto 文件路径
-   * 约定：服务名 "user" 对应 generated/user.proto
+   * 约定：服务名 "user" 对应 protobuf/user/user.proto
    */
   getProtoPath(serviceName: string): string {
-    const generatedDir = path.resolve(this.baseDir, GENERATED_DIR)
+    const protobufDir = path.resolve(this.baseDir, PROTOBUF_DIR)
+    const serviceDir = serviceName.toLowerCase()
     const protoFile = `${serviceName.toLowerCase()}.proto`
-    return path.join(generatedDir, protoFile)
+    return path.join(protobufDir, serviceDir, protoFile)
   }
 
   /**
@@ -82,11 +83,25 @@ export class ConfigManager {
   }
 
   /**
-   * 获取输出目录
-   * proto 文件和生成的 ts 文件都放在这个目录
+   * 获取输出目录（protobuf 根目录）
    */
   getOutputDir(): string {
-    return path.resolve(this.baseDir, GENERATED_DIR)
+    return path.resolve(this.baseDir, PROTOBUF_DIR)
+  }
+
+  /**
+   * 获取 types 目录路径
+   */
+  getTypesDir(): string {
+    return path.join(this.getOutputDir(), 'types')
+  }
+
+  /**
+   * 获取服务目录路径
+   * @param serviceName 服务名
+   */
+  getServiceDir(serviceName: string): string {
+    return path.join(this.getOutputDir(), serviceName.toLowerCase())
   }
 }
 

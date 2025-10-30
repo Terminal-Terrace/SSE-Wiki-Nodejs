@@ -181,17 +181,17 @@ client.close()
 
 Proto 类型到 TypeScript 类型的映射：
 
-| Proto 类型 | TypeScript 类型 |
-|-----------|----------------|
-| `int32`, `uint32`, `sint32`, `fixed32`, `sfixed32` | `number` |
-| `int64`, `uint64`, `sint64`, `fixed64`, `sfixed64` | `string` |
-| `float`, `double` | `number` |
-| `bool` | `boolean` |
-| `string` | `string` |
-| `bytes` | `Uint8Array` |
-| `enum` | `enum` |
-| `message` | `interface` |
-| `repeated` | `Array<T>` |
+| Proto 类型                                         | TypeScript 类型 |
+| -------------------------------------------------- | --------------- |
+| `int32`, `uint32`, `sint32`, `fixed32`, `sfixed32` | `number`        |
+| `int64`, `uint64`, `sint64`, `fixed64`, `sfixed64` | `string`        |
+| `float`, `double`                                  | `number`        |
+| `bool`                                             | `boolean`       |
+| `string`                                           | `string`        |
+| `bytes`                                            | `Uint8Array`    |
+| `enum`                                             | `enum`          |
+| `message`                                          | `interface`     |
+| `repeated`                                         | `Array<T>`      |
 
 注：64 位整数映射为 `string` 以避免 JavaScript 精度损失。
 

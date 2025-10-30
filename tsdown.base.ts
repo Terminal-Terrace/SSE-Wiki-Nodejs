@@ -8,8 +8,8 @@ export const packageTsdownConfig: Options = {
   // 默认入口文件
   entry: ['src/index.ts'],
 
-  // 输出格式：同时支持 ESM 和 CJS
-  format: ['esm', 'cjs'],
+  // 输出格式：仅支持 ESM
+  format: ['esm'],
 
   // 输出目录
   outDir: 'dist',

@@ -135,7 +135,7 @@ export class ${serviceName} {
    * @param config 可选配置
    */
   constructor(config?: ${serviceName}Config) {
-    const protoPath = path.join(__dirname, '${protoFileName}')
+    const protoPath = path.join(__dirname, '${protoServiceName.toLowerCase()}', '${protoFileName}')
 
     this.rpcClient = new RpcClient({
       protoPath,

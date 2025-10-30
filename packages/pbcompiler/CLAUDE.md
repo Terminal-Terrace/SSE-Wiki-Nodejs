@@ -88,6 +88,7 @@ cpb sync [-c <config>]            # Download/sync all proto files
 ## Build Configuration
 
 Uses `tsdown` with configuration at `tsdown.config.ts`:
+
 - Entry: `src/cli.ts` only (single CLI binary)
 - No type declarations (`dts: false`)
 - No sourcemaps

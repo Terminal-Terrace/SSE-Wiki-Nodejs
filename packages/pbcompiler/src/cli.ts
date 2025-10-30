@@ -23,8 +23,9 @@ function ensureDir(dir: string): void {
 
 /**
  * 生成单个服务的客户端代码
+ * @returns 服务类代码
  */
-async function generateService(serviceName: string, config: ConfigManager): Promise<void> {
+async function generateService(serviceName: string, config: ConfigManager): Promise<string> {
   console.log(`\n[${serviceName}] 开始生成...`)
 
   try {
@@ -50,21 +51,20 @@ async function generateService(serviceName: string, config: ConfigManager): Prom
 
     // 3. 生成代码
     const serverAddress = config.getServerAddress()
-    const result = protoToTs(protoContent, serviceName, `${serviceName}-types`, serverAddress)
+    const result = protoToTs(protoContent, serviceName, `types/${serviceName}`, serverAddress)
 
-    // 4. 写入文件
-    const outputDir = config.getOutputDir()
-    ensureDir(outputDir)
+    // 4. 写入类型文件到 protobuf/types/ 目录
+    const typesDir = config.getTypesDir()
+    ensureDir(typesDir)
 
-    const typesFile = path.join(outputDir, `${serviceName}-types.ts`)
-    const serviceFile = path.join(outputDir, `${serviceName}-service.ts`)
-
+    const typesFile = path.join(typesDir, `${serviceName}.d.ts`)
     fs.writeFileSync(typesFile, result.types, 'utf-8')
-    fs.writeFileSync(serviceFile, result.service, 'utf-8')
 
     console.log(`[${serviceName}] ✓ 生成成功`)
     console.log(`  - ${typesFile}`)
-    console.log(`  - ${serviceFile}`)
+
+    // 返回服务类代码
+    return result.service
   }
   catch (error) {
     console.error(`[${serviceName}] ✗ 生成失败:`, error instanceof Error ? error.message : error)
@@ -91,11 +91,23 @@ async function generateCommand(options: { config?: string }): Promise<void> {
 
     console.log(`找到 ${pbConfig.services.length} 个服务: ${pbConfig.services.join(', ')}`)
 
-    // 生成所有服务
+    // 生成所有服务，收集服务类代码
+    const serviceClasses: string[] = []
     for (const serviceName of pbConfig.services) {
-      await generateService(serviceName, config)
+      const serviceCode = await generateService(serviceName, config)
+      serviceClasses.push(serviceCode)
     }
 
+    // 写入统一的 protoclasses.ts 文件到 protobuf/ 目录
+    const outputDir = config.getOutputDir()
+    ensureDir(outputDir)
+    const protoClassesFile = path.join(outputDir, 'protoclasses.ts')
+
+    // 合并所有服务类代码
+    const combinedCode = serviceClasses.join('\n\n')
+    fs.writeFileSync(protoClassesFile, combinedCode, 'utf-8')
+
+    console.log(`\n✓ 所有服务类已写入: ${protoClassesFile}`)
     console.log('\n✓ 所有服务生成完成！')
   }
   catch (error) {

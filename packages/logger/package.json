@@ -1,5 +1,5 @@
 {
-  "name": "@sse-wiki/template",
+  "name": "@sse-wiki/logger",
   "type": "module",
   "version": "0.0.1",
   "description": "Logger package for SSE Wiki",
