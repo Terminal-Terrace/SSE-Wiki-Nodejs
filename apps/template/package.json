@@ -15,6 +15,7 @@
   "dependencies": {
     "@koa/bodyparser": "^6.0.0",
     "@koa/router": "^14.0.0",
+    "@sse-wiki/context": "workspace:*",
     "@sse-wiki/error": "workspace:*",
     "@sse-wiki/logger": "workspace:*",
     "@sse-wiki/response": "workspace:*",

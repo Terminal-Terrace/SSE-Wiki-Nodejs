@@ -9,6 +9,13 @@ export async function responseMiddleware(ctx: Context, next: Next) {
       message: '',
     }
   }
+  ctx.fail = (code: number, message: string) => {
+    ctx.status = 200
+    ctx.body = {
+      code,
+      message,
+    }
+  }
   await next()
 }
 

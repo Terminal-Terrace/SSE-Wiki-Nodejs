@@ -53,6 +53,9 @@ importers:
       '@koa/router':
         specifier: ^14.0.0
         version: 14.0.0
+      '@sse-wiki/context':
+        specifier: workspace:*
+        version: link:../../packages/context
       '@sse-wiki/error':
         specifier: workspace:*
         version: link:../../packages/error
@@ -78,6 +81,15 @@ importers:
       '@types/koa__router':
         specifier: ^12.0.5
         version: 12.0.5
+
+  packages/context:
+    dependencies:
+      '@types/koa':
+        specifier: ^3.0.1
+        version: 3.0.1
+      koa:
+        specifier: ^3.0.3
+        version: 3.0.3
 
   packages/error:
     dependencies:

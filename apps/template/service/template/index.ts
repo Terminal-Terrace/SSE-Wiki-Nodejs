@@ -1,3 +1,4 @@
+import { getCtx } from '@sse-wiki/context'
 import { LogicError } from '@sse-wiki/error'
 import { ErrorCode } from '../../error'
 
@@ -12,6 +13,10 @@ class TemplateService {
 
   async fail() {
     throw new LogicError(ErrorCode.UNKNOWN, 'This is a template service error')
+  }
+
+  async fail2() {
+    getCtx().fail(ErrorCode.UNKNOWN, 'This is another template service error')
   }
 }
 
