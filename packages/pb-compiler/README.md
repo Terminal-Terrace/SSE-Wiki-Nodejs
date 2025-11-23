@@ -20,6 +20,8 @@ pnpm build # 构建
 pnpm link # 链接到全局
 ```
 
+推荐执行`pnpm link`，这样go那里也可以用cpb
+
 ## 快速开始
 
 ### 1. 初始化配置
@@ -32,12 +34,11 @@ cpb init
 
 ```json
 {
-  "services": [],
-  "serverAddress": "localhost:50051" // 网关地址，目前后端还没有实现
+  "services": []
 }
 ```
 
-### 2. 配置 GitHub 访问（可选）
+### 2. 配置 GitHub 访问
 
 如果需要从 GitHub 仓库下载 proto 文件：
 
@@ -52,28 +53,22 @@ cpb config --owner <owner> --repo <repo> --proto-dir <path>
 cpb config --show
 ```
 
-### 3. 添加服务
-
-```bash
-cpb add user
-```
-
 这会将服务添加到 `pb.config.json` 的 `services` 数组中。
 
-### 4. 生成客户端代码
+### 3. 生成客户端代码
 
 ```bash
 cpb generate
 ```
 
-生成的文件将保存在 `./generated/` 目录下：
+生成的文件将保存在 `./protobuf/` 目录下：
 
-```
-generated/
-├── user.proto           # Proto 文件（如果从远程下载）
-├── user-types.ts        # TypeScript 类型定义
-└── user-service.ts      # gRPC 客户端类
-```
+- protobuf/
+  - authservice
+    - authservice.proto
+  - types
+    - authservice.d.ts
+  - protoclasses.ts
 
 ## CLI 命令
 
@@ -91,18 +86,6 @@ cpb init
 
 ```bash
 cpb generate
-
-# 使用自定义配置文件
-cpb generate -c ./custom-config.json
-```
-
-### `cpb add <service>`
-
-添加新服务到配置文件。
-
-```bash
-cpb add user
-cpb add order -c ./custom-config.json
 ```
 
 ### `cpb sync`
@@ -111,7 +94,6 @@ cpb add order -c ./custom-config.json
 
 ```bash
 cpb sync
-cpb sync -c ./custom-config.json
 ```
 
 ### `cpb login <token>`
@@ -142,8 +124,7 @@ cpb config --show
 
 ```json
 {
-  "services": ["user", "order", "product"],
-  "serverAddress": "api.example.com:50051"
+  "services": ["authservice"]
 }
 ```
 
@@ -154,20 +135,20 @@ cpb config --show
 
 ### 约定
 
-- 服务名称（如 `user`）→ proto 文件：`generated/user.proto`
+- 服务名称（如 `authservice`）→ proto 文件：`generated/authservice.proto`
 - 服务名称 → 包名：小写服务名
-- 服务名称 → 类名：PascalCase + "Service"（如 `UserService`）
+- 服务名称 → 类名：PascalCase（如 `Authservice`）
 
 ## 使用生成的客户端
 
 ```typescript
-import { UserService } from './generated/user-service'
+import { Authservice } from './generated/authservice'
 
 // 使用默认配置（pb.config.json 中的 serverAddress）
-const client = new UserService()
+const client = new Authservice()
 
 // 或覆盖服务器地址
-const client = new UserService({ serverAddress: 'localhost:50051' })
+const client = new Authservice({ serverAddress: 'localhost:50051' })
 
 // 调用 RPC 方法
 const response = await client.getUser({ userId: '123' })
