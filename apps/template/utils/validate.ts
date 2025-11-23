@@ -1,7 +1,7 @@
 import type { Context } from 'koa'
 import type { z } from 'zod'
 import { LogicError } from '@sse-wiki/error'
-import { ErrorCode, ErrorMessage } from '../error'
+import { ErrorCode } from '../error'
 
 /**
  * 校验请求数据
@@ -37,6 +37,6 @@ export function validate<T>(
   // eslint-disable-next-line unused-imports/no-unused-vars
   catch (_err) {
     const code = ErrorCode.INVALID_PARAMS
-    throw new LogicError(code, ErrorMessage[code])
+    throw new LogicError(code)
   }
 }
