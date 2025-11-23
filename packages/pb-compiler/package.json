@@ -6,9 +6,9 @@
   "author": "",
   "license": "ISC",
   "keywords": [],
-  "main": "dist/cli.js",
+  "main": "dist/cli.mjs",
   "bin": {
-    "cpb": "./dist/cli.js"
+    "cpb": "./dist/cli.mjs"
   },
   "files": [
     "dist"

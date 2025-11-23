@@ -104,9 +104,10 @@ export function serviceTemplate(
   const packageName = protoServiceName.toLowerCase()
   const protoFileName = `${protoServiceName.toLowerCase()}.proto`
 
-  return `import path from 'path'
-import { RpcClient, type RpcClientConfig } from '@sse-wiki/rpc-client'
-import type * as Types from './${typesFileName}'
+  return `import type { RpcClientConfig } from '@sse-wiki/rpc-client'
+import type * as Types from './types/authservice'
+import path from 'node:path'
+import { RpcClient } from './${typesFileName}'
 
 /**
  * ${serviceName} 客户端配置
