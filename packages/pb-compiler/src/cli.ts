@@ -2,6 +2,7 @@
 
 import type { ConfigManager } from './config'
 import type { ServiceInfo } from './template'
+import { execSync } from 'node:child_process'
 import fs from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
@@ -11,17 +12,9 @@ import { initConfig } from './config'
 import { downloadProtoFile } from './downloader'
 import { protoClassesTemplate } from './template'
 import { protoToTs } from './translate'
+import { ensureDir } from './utils'
 
 const program = new Command()
-
-/**
- * 确保目录存在
- */
-function ensureDir(dir: string): void {
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true })
-  }
-}
 
 /**
  * 生成单个服务的客户端代码
@@ -108,8 +101,7 @@ async function generateCommand(options: { config?: string }): Promise<void> {
     const protoClassesFile = path.join(outputDir, 'protoclasses.ts')
 
     // 使用新的模板函数生成完整的 protoclasses.ts
-    const serverAddress = config.getServerAddress()
-    const combinedCode = protoClassesTemplate(serviceInfos, serverAddress)
+    const combinedCode = protoClassesTemplate(serviceInfos)
     fs.writeFileSync(protoClassesFile, combinedCode, 'utf-8')
 
     console.log(`\n✓ 所有服务类已写入: ${protoClassesFile}`)
@@ -117,48 +109,6 @@ async function generateCommand(options: { config?: string }): Promise<void> {
   }
   catch (error) {
     console.error('\n✗ 生成失败:', error instanceof Error ? error.message : error)
-    process.exit(1)
-  }
-}
-
-/**
- * add 命令 - 添加新服务
- */
-async function addCommand(serviceName: string, options: { config?: string }): Promise<void> {
-  try {
-    const configPath = options.config || './pb.config.json'
-
-    // 读取配置文件
-    if (!fs.existsSync(configPath)) {
-      console.error(`配置文件不存在: ${configPath}`)
-      console.log('提示: 请先创建 pb.config.json 文件')
-      process.exit(1)
-    }
-
-    const configContent = fs.readFileSync(configPath, 'utf-8')
-    const pbConfig = JSON.parse(configContent)
-
-    // 检查服务是否已存在
-    if (pbConfig.services && pbConfig.services.includes(serviceName)) {
-      console.log(`服务 "${serviceName}" 已存在于配置中`)
-      return
-    }
-
-    // 添加服务
-    if (!pbConfig.services) {
-      pbConfig.services = []
-    }
-    pbConfig.services.push(serviceName)
-
-    // 保存配置
-    fs.writeFileSync(configPath, JSON.stringify(pbConfig, null, 2), 'utf-8')
-    console.log(`✓ 已添加服务 "${serviceName}" 到配置文件`)
-
-    // 询问是否立即生成
-    console.log(`\n提示: 运行 "cpb generate" 来生成该服务的客户端代码`)
-  }
-  catch (error) {
-    console.error('✗ 添加失败:', error instanceof Error ? error.message : error)
     process.exit(1)
   }
 }
@@ -221,7 +171,6 @@ function initCommand(): void {
 
   const defaultConfig = {
     services: [],
-    serverAddress: 'localhost:50051',
   }
 
   fs.writeFileSync(configPath, JSON.stringify(defaultConfig, null, 2), 'utf-8')
@@ -325,6 +274,96 @@ function configCommand(options: { owner?: string, repo?: string, protoDir?: stri
   }
 }
 
+/**
+ * gen-go 命令 - 使用 protoc 生成 Go 代码
+ */
+async function genGoCommand(options: { config?: string }): Promise<void> {
+  try {
+    // 检查 protoc 是否安装
+    try {
+      execSync('protoc --version', { stdio: 'pipe' })
+    }
+    catch {
+      console.error('✗ 错误: 未找到 protoc 命令')
+      console.log('\n请先安装 Protocol Buffers 编译器:')
+      console.log('  - macOS: brew install protobuf')
+      console.log('  - Linux: apt-get install protobuf-compiler 或 yum install protobuf-compiler')
+      console.log('  - 或从 https://github.com/protocolbuffers/protobuf/releases 下载')
+      process.exit(1)
+    }
+
+    // 检查 protoc-gen-go 是否安装
+    try {
+      execSync('protoc-gen-go --version', { stdio: 'pipe' })
+    }
+    catch {
+      console.error('✗ 错误: 未找到 protoc-gen-go 插件')
+      console.log('\n请先安装 Go protobuf 插件:')
+      console.log('  go install google.golang.org/protobuf/cmd/protoc-gen-go@latest')
+      console.log('\n确保 $GOPATH/bin 在你的 PATH 中')
+      process.exit(1)
+    }
+
+    // 初始化配置
+    const configPath = options.config || './pb.config.json'
+    console.log(`读取配置文件: ${configPath}`)
+
+    const config = initConfig(configPath)
+    const pbConfig = config.getConfig()
+
+    if (!pbConfig.services || pbConfig.services.length === 0) {
+      console.warn('警告: 配置文件中没有定义任何服务')
+      return
+    }
+
+    console.log(`找到 ${pbConfig.services.length} 个服务: ${pbConfig.services.join(', ')}`)
+
+    // 确保输出目录存在
+    const goOutputDir = config.getOutputDir()
+    ensureDir(goOutputDir)
+
+    // 生成所有服务的 Go 代码
+    for (const serviceName of pbConfig.services) {
+      try {
+        console.log(`\n[${serviceName}] 生成 Go 代码...`)
+
+        // 获取 proto 文件路径
+        const protoPath = config.getProtoPath(serviceName)
+
+        if (!fs.existsSync(protoPath)) {
+          console.error(`[${serviceName}] ✗ proto 文件不存在: ${protoPath}`)
+          console.log(`提示: 请先运行 "cpb sync" 下载 proto 文件`)
+          continue
+        }
+
+        // 获取 proto 文件所在目录（用于 -I 参数）
+        const protobufBaseDir = config.getOutputDir()
+
+        // 调用 protoc 生成 Go 代码
+        // --go_out=. 表示输出到当前目录
+        // --go_opt=paths=source_relative 表示使用相对路径
+        // 但我们需要输出到 pkg/pb，所以使用 module 参数
+        const cmd = `protoc -I="${protobufBaseDir}" --go_out="${goOutputDir}" --go_opt=paths=source_relative "${protoPath}"`
+
+        console.log(`[${serviceName}] 执行: ${cmd}`)
+        execSync(cmd, { stdio: 'inherit' })
+
+        console.log(`[${serviceName}] ✓ 生成成功`)
+      }
+      catch (error) {
+        console.error(`[${serviceName}] ✗ 生成失败:`, error instanceof Error ? error.message : error)
+      }
+    }
+
+    console.log(`\n✓ Go 代码已生成到: ${goOutputDir}`)
+    console.log('✓ 所有服务的 Go 代码生成完成！')
+  }
+  catch (error) {
+    console.error('\n✗ 生成失败:', error instanceof Error ? error.message : error)
+    process.exit(1)
+  }
+}
+
 // 配置 CLI
 program
   .name('cpb')
@@ -341,12 +380,6 @@ program
   .description('生成所有服务的客户端代码')
   .option('-c, --config <path>', '配置文件路径', './pb.config.json')
   .action(generateCommand)
-
-program
-  .command('add <service>')
-  .description('添加新服务到配置')
-  .option('-c, --config <path>', '配置文件路径', './pb.config.json')
-  .action(addCommand)
 
 program
   .command('sync')
@@ -367,6 +400,12 @@ program
   .option('--proto-dir <dir>', '设置 proto 文件在仓库中的目录路径')
   .option('--show', '查看当前配置')
   .action(configCommand)
+
+program
+  .command('gen-go')
+  .description('使用 protoc 生成 Go 代码')
+  .option('-c, --config <path>', '配置文件路径', './pb.config.json')
+  .action(genGoCommand)
 
 // 解析命令行参数
 program.parse()

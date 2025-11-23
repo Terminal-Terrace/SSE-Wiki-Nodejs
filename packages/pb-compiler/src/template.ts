@@ -100,7 +100,6 @@ function functionTemplate(method: Method, serviceName: string) {
 function serviceClassTemplate(
   service: Service,
   protoServiceName: string,
-  serverAddress: string,
 ): string {
   const { serviceName, methods } = service
   const packageName = protoServiceName.toLowerCase()
@@ -129,7 +128,7 @@ export class ${serviceName} {
       protoPath,
       packageName: '${packageName}',
       serviceClassName: '${serviceName}',
-      serverAddress: config?.serverAddress || '${serverAddress}',
+      serverAddress: config?.serverAddress || 'localhost:50051',
       ...config?.rpcConfig,
     })
   }
@@ -166,10 +165,9 @@ export interface ServiceInfo {
 /**
  * 生成完整的 protoclasses.ts 文件
  * @param services 所有服务的信息
- * @param serverAddress 默认的 gRPC 服务器地址
  * @returns 完整的 protoclasses.ts 文件内容
  */
-export function protoClassesTemplate(services: ServiceInfo[], serverAddress: string): string {
+export function protoClassesTemplate(services: ServiceInfo[]): string {
   // 1. 公共 import
   const commonImports = `import type { RpcClientConfig } from '@sse-wiki/rpc-client'
 import path from 'node:path'
@@ -185,7 +183,6 @@ import { RpcClient } from '@sse-wiki/rpc-client'`
  * 服务客户端配置
  */
 export interface ServiceConfig {
-  /** gRPC 服务器地址，默认为 '${serverAddress}' */
   serverAddress?: string
   /** 其他 RpcClient 配置 */
   rpcConfig?: Partial<Omit<RpcClientConfig, 'protoPath' | 'packageName' | 'serviceClassName' | 'serverAddress'>>
@@ -193,7 +190,7 @@ export interface ServiceConfig {
 
   // 4. 各个服务的类定义
   const serviceClasses = services.map(({ service, protoServiceName }) =>
-    serviceClassTemplate(service, protoServiceName, serverAddress),
+    serviceClassTemplate(service, protoServiceName),
   ).join('\n\n')
 
   // 5. 组合成完整文件

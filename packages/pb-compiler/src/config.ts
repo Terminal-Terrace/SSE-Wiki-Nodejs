@@ -7,8 +7,6 @@ import path from 'node:path'
 export interface PbConfig {
   /** 服务名列表 */
   services: string[]
-  /** gRPC 服务器地址，默认 'localhost:50051' */
-  serverAddress?: string
 }
 
 /**
@@ -35,9 +33,6 @@ export class ConfigManager {
 
     const content = fs.readFileSync(this.configPath, 'utf-8')
     this.config = JSON.parse(content)
-
-    // 设置默认值
-    this.config.serverAddress = this.config.serverAddress || 'localhost:50051'
   }
 
   /**
@@ -73,13 +68,6 @@ export class ConfigManager {
   getServiceClassName(serviceName: string): string {
     const capitalized = serviceName.charAt(0).toUpperCase() + serviceName.slice(1)
     return `${capitalized}Service`
-  }
-
-  /**
-   * 获取 gRPC 服务器地址
-   */
-  getServerAddress(): string {
-    return this.config.serverAddress!
   }
 
   /**

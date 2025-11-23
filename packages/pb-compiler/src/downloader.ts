@@ -1,5 +1,6 @@
 import { Buffer } from 'node:buffer'
 import { getGithubToken, getRepoConfig, validateAuthConfig } from './auth-config'
+import { ensureDir } from './utils'
 
 /**
  * Proto 文件下载器
@@ -44,6 +45,8 @@ export async function downloadProtoFile(serviceName: string): Promise<string> {
   const { owner, name: repo, protoDir } = getRepoConfig()
 
   // 3. 构建文件路径和 API URL
+  // 创建目录
+  ensureDir(serviceName.toLowerCase())
   const fileName = `${serviceName.toLowerCase()}/${serviceName.toLowerCase()}.proto`
   const filePath = protoDir ? `${protoDir}/${fileName}` : fileName
   const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${filePath}`
