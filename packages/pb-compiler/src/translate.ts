@@ -1,6 +1,6 @@
-import type { EnumType, MessageField, MessageType, Method } from './template'
+import type { EnumType, MessageField, MessageType, Method, Service } from './template'
 // 读取pb文件并使用template生成对应的ts文件
-import { serviceTemplate, typesTemplate } from './template'
+import { typesTemplate } from './template'
 
 /**
  * Proto 类型到 TypeScript 类型的映射
@@ -109,22 +109,16 @@ function extractMessages(proto: string): MessageType[] {
 
 export interface GeneratedCode {
   types: string
-  service: string
+  service: Service
 }
 
 /**
  * 将 proto 文件内容转换为 TypeScript 客户端代码
  * @param proto - proto 文件内容字符串
- * @param protoServiceName - proto 服务名（如 "user"），用于 RpcClient 查找 proto 文件
- * @param typesFileName - 类型文件名（不含扩展名），默认为 'types'
- * @param serverAddress - 默认的 gRPC 服务器地址
- * @returns 生成的类型文件和服务文件代码
+ * @returns 生成的类型代码和服务定义
  */
 export function protoToTs(
   proto: string,
-  protoServiceName: string,
-  typesFileName = 'types',
-  serverAddress = 'localhost:50051',
 ): GeneratedCode {
   // 1. 提取 service 定义（约定：每个 proto 文件只有一个 service）
   const serviceRegex = /service\s+(\w+)\s*\{([^}]*)\}/
@@ -155,9 +149,9 @@ export function protoToTs(
   const enums = extractEnums(proto)
   const messages = extractMessages(proto)
 
-  // 4. 生成代码
+  // 4. 返回类型代码和服务定义
   return {
     types: typesTemplate(messages, enums),
-    service: serviceTemplate({ serviceName, methods }, typesFileName, protoServiceName, serverAddress),
+    service: { serviceName, methods },
   }
 }

@@ -87,16 +87,18 @@ export function typesTemplate(messages: MessageType[], enums: EnumType[]): strin
 }
 
 // Service 模板函数
-function functionTemplate(method: Method) {
+function functionTemplate(method: Method, serviceName: string) {
   const { name, req, resp } = method
-  return `  async ${name}(req: Types.${req}): Promise<Types.${resp}> {
-    return this.rpcClient.call<Types.${req}, Types.${resp}>('${name}', req)
+  return `  async ${name}(req: ${serviceName}Types.${req}): Promise<${serviceName}Types.${resp}> {
+    return this.rpcClient.call<${serviceName}Types.${req}, ${serviceName}Types.${resp}>('${name}', req)
   }`
 }
 
-export function serviceTemplate(
+/**
+ * 生成单个服务类的定义（不含 import）
+ */
+function serviceClassTemplate(
   service: Service,
-  typesFileName: string,
   protoServiceName: string,
   serverAddress: string,
 ): string {
@@ -104,22 +106,7 @@ export function serviceTemplate(
   const packageName = protoServiceName.toLowerCase()
   const protoFileName = `${protoServiceName.toLowerCase()}.proto`
 
-  return `import type { RpcClientConfig } from '@sse-wiki/rpc-client'
-import type * as Types from './types/authservice'
-import path from 'node:path'
-import { RpcClient } from './${typesFileName}'
-
-/**
- * ${serviceName} 客户端配置
- */
-export interface ${serviceName}Config {
-  /** gRPC 服务器地址，默认为 '${serverAddress}' */
-  serverAddress?: string
-  /** 其他 RpcClient 配置 */
-  rpcConfig?: Partial<Omit<RpcClientConfig, 'protoPath' | 'packageName' | 'serviceClassName' | 'serverAddress'>>
-}
-
-/**
+  return `/**
  * ${serviceName} 客户端
  *
  * 使用示例：
@@ -135,7 +122,7 @@ export class ${serviceName} {
    * 创建 ${serviceName} 客户端
    * @param config 可选配置
    */
-  constructor(config?: ${serviceName}Config) {
+  constructor(config?: ServiceConfig) {
     const protoPath = path.join(__dirname, '${protoServiceName.toLowerCase()}', '${protoFileName}')
 
     this.rpcClient = new RpcClient({
@@ -147,7 +134,7 @@ export class ${serviceName} {
     })
   }
 
-${methods.map(method => functionTemplate(method)).join('\n\n')}
+${methods.map(method => functionTemplate(method, serviceName)).join('\n\n')}
 
   /**
    * 关闭 gRPC 连接
@@ -163,6 +150,58 @@ ${methods.map(method => functionTemplate(method)).join('\n\n')}
   async waitForReady(deadline?: number): Promise<void> {
     return this.rpcClient.waitForReady(deadline)
   }
+}`
 }
+
+/**
+ * 单个服务的信息（用于生成 protoclasses.ts）
+ */
+export interface ServiceInfo {
+  /** proto 服务名（如 "authservice"，用于文件路径） */
+  protoServiceName: string
+  /** 服务定义（包含 serviceName 和方法列表） */
+  service: Service
+}
+
+/**
+ * 生成完整的 protoclasses.ts 文件
+ * @param services 所有服务的信息
+ * @param serverAddress 默认的 gRPC 服务器地址
+ * @returns 完整的 protoclasses.ts 文件内容
+ */
+export function protoClassesTemplate(services: ServiceInfo[], serverAddress: string): string {
+  // 1. 公共 import
+  const commonImports = `import type { RpcClientConfig } from '@sse-wiki/rpc-client'
+import path from 'node:path'
+import { RpcClient } from '@sse-wiki/rpc-client'`
+
+  // 2. 各个服务的类型 import
+  const typeImports = services.map(({ service, protoServiceName }) =>
+    `import type * as ${service.serviceName}Types from './types/${protoServiceName}'`,
+  ).join('\n')
+
+  // 3. 统一的 ServiceConfig 接口
+  const serviceConfig = `/**
+ * 服务客户端配置
+ */
+export interface ServiceConfig {
+  /** gRPC 服务器地址，默认为 '${serverAddress}' */
+  serverAddress?: string
+  /** 其他 RpcClient 配置 */
+  rpcConfig?: Partial<Omit<RpcClientConfig, 'protoPath' | 'packageName' | 'serviceClassName' | 'serverAddress'>>
+}`
+
+  // 4. 各个服务的类定义
+  const serviceClasses = services.map(({ service, protoServiceName }) =>
+    serviceClassTemplate(service, protoServiceName, serverAddress),
+  ).join('\n\n')
+
+  // 5. 组合成完整文件
+  return `${commonImports}
+${typeImports}
+
+${serviceConfig}
+
+${serviceClasses}
 `
 }

@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import type { ConfigManager } from './config'
+import type { ServiceInfo } from './template'
 import fs from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
@@ -8,6 +9,7 @@ import { Command } from 'commander'
 import { readAuthConfig, updateAuthConfig, validateAuthConfig } from './auth-config'
 import { initConfig } from './config'
 import { downloadProtoFile } from './downloader'
+import { protoClassesTemplate } from './template'
 import { protoToTs } from './translate'
 
 const program = new Command()
@@ -23,9 +25,9 @@ function ensureDir(dir: string): void {
 
 /**
  * 生成单个服务的客户端代码
- * @returns 服务类代码
+ * @returns ServiceInfo 对象
  */
-async function generateService(serviceName: string, config: ConfigManager): Promise<string> {
+async function generateService(serviceName: string, config: ConfigManager): Promise<ServiceInfo> {
   console.log(`\n[${serviceName}] 开始生成...`)
 
   try {
@@ -50,8 +52,7 @@ async function generateService(serviceName: string, config: ConfigManager): Prom
     }
 
     // 3. 生成代码
-    const serverAddress = config.getServerAddress()
-    const result = protoToTs(protoContent, serviceName, `types/${serviceName}`, serverAddress)
+    const result = protoToTs(protoContent)
 
     // 4. 写入类型文件到 protobuf/types/ 目录
     const typesDir = config.getTypesDir()
@@ -63,8 +64,11 @@ async function generateService(serviceName: string, config: ConfigManager): Prom
     console.log(`[${serviceName}] ✓ 生成成功`)
     console.log(`  - ${typesFile}`)
 
-    // 返回服务类代码
-    return result.service
+    // 返回 ServiceInfo
+    return {
+      protoServiceName: serviceName,
+      service: result.service,
+    }
   }
   catch (error) {
     console.error(`[${serviceName}] ✗ 生成失败:`, error instanceof Error ? error.message : error)
@@ -91,11 +95,11 @@ async function generateCommand(options: { config?: string }): Promise<void> {
 
     console.log(`找到 ${pbConfig.services.length} 个服务: ${pbConfig.services.join(', ')}`)
 
-    // 生成所有服务，收集服务类代码
-    const serviceClasses: string[] = []
+    // 生成所有服务，收集 ServiceInfo
+    const serviceInfos: ServiceInfo[] = []
     for (const serviceName of pbConfig.services) {
-      const serviceCode = await generateService(serviceName, config)
-      serviceClasses.push(serviceCode)
+      const serviceInfo = await generateService(serviceName, config)
+      serviceInfos.push(serviceInfo)
     }
 
     // 写入统一的 protoclasses.ts 文件到 protobuf/ 目录
@@ -103,8 +107,9 @@ async function generateCommand(options: { config?: string }): Promise<void> {
     ensureDir(outputDir)
     const protoClassesFile = path.join(outputDir, 'protoclasses.ts')
 
-    // 合并所有服务类代码
-    const combinedCode = serviceClasses.join('\n\n')
+    // 使用新的模板函数生成完整的 protoclasses.ts
+    const serverAddress = config.getServerAddress()
+    const combinedCode = protoClassesTemplate(serviceInfos, serverAddress)
     fs.writeFileSync(protoClassesFile, combinedCode, 'utf-8')
 
     console.log(`\n✓ 所有服务类已写入: ${protoClassesFile}`)

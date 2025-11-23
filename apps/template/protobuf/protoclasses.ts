@@ -1,12 +1,12 @@
 import type { RpcClientConfig } from '@sse-wiki/rpc-client'
-import type * as Types from './types/authservice'
+import type * as AuthServiceTypes from './types/authservice'
 import path from 'node:path'
-import { RpcClient } from './types/authservice'
+import { RpcClient } from '@sse-wiki/rpc-client'
 
 /**
- * AuthService 客户端配置
+ * 服务客户端配置
  */
-export interface AuthServiceConfig {
+export interface ServiceConfig {
   /** gRPC 服务器地址，默认为 'localhost:50051' */
   serverAddress?: string
   /** 其他 RpcClient 配置 */
@@ -29,7 +29,7 @@ export class AuthService {
    * 创建 AuthService 客户端
    * @param config 可选配置
    */
-  constructor(config?: AuthServiceConfig) {
+  constructor(config?: ServiceConfig) {
     const protoPath = path.join(__dirname, 'authservice', 'authservice.proto')
 
     this.rpcClient = new RpcClient({
@@ -41,28 +41,28 @@ export class AuthService {
     })
   }
 
-  async SendCode(req: Types.CodeRequest): Promise<Types.CodeResponse> {
-    return this.rpcClient.call<Types.CodeRequest, Types.CodeResponse>('SendCode', req)
+  async SendCode(req: AuthServiceTypes.CodeRequest): Promise<AuthServiceTypes.CodeResponse> {
+    return this.rpcClient.call<AuthServiceTypes.CodeRequest, AuthServiceTypes.CodeResponse>('SendCode', req)
   }
 
-  async Login(req: Types.LoginRequest): Promise<Types.LoginResponse> {
-    return this.rpcClient.call<Types.LoginRequest, Types.LoginResponse>('Login', req)
+  async Login(req: AuthServiceTypes.LoginRequest): Promise<AuthServiceTypes.LoginResponse> {
+    return this.rpcClient.call<AuthServiceTypes.LoginRequest, AuthServiceTypes.LoginResponse>('Login', req)
   }
 
-  async Logout(req: Types.LogoutRequest): Promise<Types.LogoutResponse> {
-    return this.rpcClient.call<Types.LogoutRequest, Types.LogoutResponse>('Logout', req)
+  async Logout(req: AuthServiceTypes.LogoutRequest): Promise<AuthServiceTypes.LogoutResponse> {
+    return this.rpcClient.call<AuthServiceTypes.LogoutRequest, AuthServiceTypes.LogoutResponse>('Logout', req)
   }
 
-  async GetUserInfo(req: Types.InfoRequest): Promise<Types.InfoResponse> {
-    return this.rpcClient.call<Types.InfoRequest, Types.InfoResponse>('GetUserInfo', req)
+  async GetUserInfo(req: AuthServiceTypes.InfoRequest): Promise<AuthServiceTypes.InfoResponse> {
+    return this.rpcClient.call<AuthServiceTypes.InfoRequest, AuthServiceTypes.InfoResponse>('GetUserInfo', req)
   }
 
-  async RefreshToken(req: Types.RefreshRequest): Promise<Types.RefreshResponse> {
-    return this.rpcClient.call<Types.RefreshRequest, Types.RefreshResponse>('RefreshToken', req)
+  async RefreshToken(req: AuthServiceTypes.RefreshRequest): Promise<AuthServiceTypes.RefreshResponse> {
+    return this.rpcClient.call<AuthServiceTypes.RefreshRequest, AuthServiceTypes.RefreshResponse>('RefreshToken', req)
   }
 
-  async Register(req: Types.RegisterRequest): Promise<Types.RegisterResponse> {
-    return this.rpcClient.call<Types.RegisterRequest, Types.RegisterResponse>('Register', req)
+  async Register(req: AuthServiceTypes.RegisterRequest): Promise<AuthServiceTypes.RegisterResponse> {
+    return this.rpcClient.call<AuthServiceTypes.RegisterRequest, AuthServiceTypes.RegisterResponse>('Register', req)
   }
 
   /**

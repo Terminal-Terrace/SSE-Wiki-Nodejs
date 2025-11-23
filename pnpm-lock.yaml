@@ -45,6 +45,52 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
 
+  apps/auth-service:
+    dependencies:
+      '@koa/bodyparser':
+        specifier: ^6.0.0
+        version: 6.0.0(koa@3.0.3)
+      '@koa/router':
+        specifier: ^14.0.0
+        version: 14.0.0
+      '@sse-wiki/context':
+        specifier: workspace:*
+        version: link:../../packages/context
+      '@sse-wiki/error':
+        specifier: workspace:*
+        version: link:../../packages/error
+      '@sse-wiki/logger':
+        specifier: workspace:*
+        version: link:../../packages/logger
+      '@sse-wiki/pb-compiler':
+        specifier: workspace:*
+        version: link:../../packages/pb-compiler
+      '@sse-wiki/response':
+        specifier: workspace:*
+        version: link:../../packages/response
+      '@sse-wiki/rpc-client':
+        specifier: workspace:*
+        version: link:../../packages/rpc-client
+      jsonwebtoken:
+        specifier: ^9.0.2
+        version: 9.0.2
+      koa:
+        specifier: ^3.0.3
+        version: 3.0.3
+      zod:
+        specifier: ^4.1.12
+        version: 4.1.12
+    devDependencies:
+      '@types/jsonwebtoken':
+        specifier: ^9.0.10
+        version: 9.0.10
+      '@types/koa':
+        specifier: ^3.0.1
+        version: 3.0.1
+      '@types/koa__router':
+        specifier: ^12.0.5
+        version: 12.0.5
+
   apps/template:
     dependencies:
       '@koa/bodyparser':
