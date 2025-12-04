@@ -44,13 +44,13 @@ export class ConfigManager {
 
   /**
    * 根据服务名获取 proto 文件路径
-   * 约定：服务名 "user" 对应 protobuf/user/user.proto
+   * 约定：服务名 "user" 对应 protobuf/proto/user/user.proto
    */
   getProtoPath(serviceName: string): string {
     const protobufDir = path.resolve(this.baseDir, PROTOBUF_DIR)
     const serviceDir = serviceName.toLowerCase()
     const protoFile = `${serviceName.toLowerCase()}.proto`
-    return path.join(protobufDir, serviceDir, protoFile)
+    return path.join(protobufDir, 'proto', serviceDir, protoFile)
   }
 
   /**

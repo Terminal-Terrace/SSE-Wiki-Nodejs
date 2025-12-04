@@ -122,7 +122,7 @@ export class ${serviceName} {
    * @param config 可选配置
    */
   constructor(config?: ServiceConfig) {
-    const protoPath = path.join(__dirname, '${protoServiceName.toLowerCase()}', '${protoFileName}')
+    const protoPath = path.join(import.meta.dirname, 'proto', '${protoServiceName.toLowerCase()}', '${protoFileName}')
 
     this.rpcClient = new RpcClient({
       protoPath,

@@ -7,6 +7,6 @@ export default defineConfig(
     // entry: ['index.ts'], // 应用入口（默认）
     // entry: ['server.ts'], // 或使用其他入口文件
     // dts: false, // 应用通常不需要类型声明
-    sourcemap: false,
+    sourcemap: true,
   }),
 )

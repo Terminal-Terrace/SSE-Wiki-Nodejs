@@ -142,6 +142,8 @@ async function syncCommand(options: { config?: string }): Promise<void> {
         const protoContent = await downloadProtoFile(serviceName)
 
         const protoPath = config.getProtoPath(serviceName)
+        const protoDir = path.dirname(protoPath)
+        ensureDir(protoDir)
         fs.writeFileSync(protoPath, protoContent, 'utf-8')
         console.log(`[${serviceName}] ✓ 已保存到 ${protoPath}`)
       }

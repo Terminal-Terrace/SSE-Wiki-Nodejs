@@ -20,6 +20,7 @@ export function createAuthMiddleware(options: AuthMiddlewareOptions) {
     const authHeader = ctx.headers.authorization
 
     if (!authHeader) {
+      await next()
       return
     }
     try {

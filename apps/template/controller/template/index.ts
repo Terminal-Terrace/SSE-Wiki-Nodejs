@@ -5,7 +5,7 @@ import { createUserSchema, queryUserSchema, userIdSchema } from './schema'
 
 class TemplateController {
   success(ctx: Context) {
-    ctx.log('123')
+    ctx.logger.info('123')
     ctx.success('ok')
   }
 
@@ -19,7 +19,7 @@ class TemplateController {
     const data = validate(ctx, createUserSchema, 'body')
 
     // data 已经有完整的类型提示
-    ctx.log(`Creating user: ${data.username}, ${data.email}`)
+    ctx.logger.info(`Creating user: ${data.username}, ${data.email}`)
 
     // 处理业务逻辑...
     ctx.success({ id: 1, ...data })
@@ -30,7 +30,7 @@ class TemplateController {
     // 校验查询参数
     const query = validate(ctx, queryUserSchema, 'query')
 
-    ctx.log(`Querying users: page=${query.page}, pageSize=${query.pageSize}`)
+    ctx.logger.info(`Querying users: page=${query.page}, pageSize=${query.pageSize}`)
 
     // 处理业务逻辑...
     ctx.success({
@@ -46,7 +46,7 @@ class TemplateController {
     // 校验路由参数
     const params = validate(ctx, userIdSchema, 'params')
 
-    ctx.log(`Getting user by id: ${params.id}`)
+    ctx.logger.info(`Getting user by id: ${params.id}`)
 
     // 处理业务逻辑...
     ctx.success({ id: params.id, username: 'test' })
