@@ -1,0 +1,6 @@
+{
+  "services": [
+    "authservice"
+  ],
+  "serverAddress": "localhost:50051"
+}
