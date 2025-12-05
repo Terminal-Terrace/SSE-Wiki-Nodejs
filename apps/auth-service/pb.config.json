@@ -1,6 +1,7 @@
 {
   "services": [
-    "authservice"
+    "authservice",
+    "ssewiki"
   ],
   "serverAddress": "localhost:50051"
 }

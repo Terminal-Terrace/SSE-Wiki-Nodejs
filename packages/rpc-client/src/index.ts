@@ -2,6 +2,9 @@ import type { ServiceClientConstructor } from '@grpc/grpc-js'
 import * as grpc from '@grpc/grpc-js'
 import * as protoLoader from '@grpc/proto-loader'
 
+// Re-export Metadata for external use
+export { Metadata } from '@grpc/grpc-js'
+
 /**
  * RPC 客户端配置
  */
@@ -70,9 +73,10 @@ export class RpcClient {
    * 调用 gRPC 方法
    * @param methodName 方法名
    * @param request 请求参数
+   * @param metadata 可选的 gRPC metadata（用于传递 JWT 等）
    * @returns Promise 响应
    */
-  async call<Req, Res>(methodName: string, request: Req): Promise<Res> {
+  async call<Req, Res>(methodName: string, request: Req, metadata?: grpc.Metadata): Promise<Res> {
     return new Promise((resolve, reject) => {
       if (typeof this.client[methodName] !== 'function') {
         const proto = Object.getPrototypeOf(this.client)
@@ -86,15 +90,34 @@ export class RpcClient {
         return
       }
 
-      this.client[methodName](request, (error: grpc.ServiceError | null, response: Res) => {
+      const callback = (error: grpc.ServiceError | null, response: Res) => {
         if (error) {
           reject(error)
         }
         else {
           resolve(response)
         }
-      })
+      }
+
+      if (metadata) {
+        this.client[methodName](request, metadata, callback)
+      }
+      else {
+        this.client[methodName](request, callback)
+      }
     })
+  }
+
+  /**
+   * 创建 gRPC Metadata 对象
+   * @param headers 键值对
+   */
+  static createMetadata(headers: Record<string, string>): grpc.Metadata {
+    const metadata = new grpc.Metadata()
+    for (const [key, value] of Object.entries(headers)) {
+      metadata.set(key, value)
+    }
+    return metadata
   }
 
   /**

@@ -1,7 +1,13 @@
 import process from 'node:process'
 import { bodyParser } from '@koa/bodyparser'
+import { ContextMiddleware } from '@sse-wiki/context'
+import { errorHandler } from '@sse-wiki/error'
+import { loggerMiddleware } from '@sse-wiki/logger'
+import { responseMiddleware } from '@sse-wiki/response'
 import Koa from 'koa'
+import { createAuthMiddleware } from './middleware/auth'
 import router from './router'
+import 'dotenv/config'
 
 const app = new Koa()
 const PORT = process.env.PORT || 3002 // Node.js Gateway 端口
@@ -27,20 +33,20 @@ app.use(async (ctx, next) => {
   await next()
 })
 
-// // 日志中间件
-// app.use(loggerMiddleware)
+// 日志中间件
+app.use(loggerMiddleware)
 
-// // 全局错误处理
-// app.use(errorHandler)
+// 全局错误处理
+app.use(errorHandler)
 
-// app.use(responseMiddleware)
+// 统一响应封装 + 上下文存储
+app.use(responseMiddleware)
+app.use(ContextMiddleware)
 
-// app.use(ContextMiddleware)
-
-// // JWT认证中间件 (可选，用于 /me 接口)
-// app.use(createAuthMiddleware({
-//   secret: process.env.JWT_SECRET || 'your-secret-key',
-// }))
+// JWT 解析中间件（用于识别登录状态）
+app.use(createAuthMiddleware({
+  secret: process.env.JWT_SECRET || 'your-secret-key',
+}))
 
 // 请求体解析
 app.use(bodyParser())

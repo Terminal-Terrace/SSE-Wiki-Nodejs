@@ -16,6 +16,9 @@
     "cz": "cz",
     "create:app": "node scripts/create-app.js"
   },
+  "dependencies": {
+    "dotenv": "^17.2.3"
+  },
   "devDependencies": {
     "@antfu/eslint-config": "^6.0.0",
     "@commitlint/cli": "^20.1.0",

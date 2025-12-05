@@ -23,7 +23,7 @@ const COOKIE_OPTIONS = {
  */
 function success(ctx: Context, data: unknown = null) {
   ctx.body = {
-    code: 0,
+    code: 100,
     message: '',
     data,
   }
