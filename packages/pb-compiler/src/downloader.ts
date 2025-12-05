@@ -23,12 +23,13 @@ interface GitHubFileResponse {
  * 下载指定服务的 proto 文件
  *
  * @param serviceName 服务名，如 "user"
+ * @param branch 分支名，默认 "main"
  * @returns proto 文件内容（字符串）
  *
  * @example
- * const protoContent = await downloadProtoFile('user')
+ * const protoContent = await downloadProtoFile('user', 'main')
  */
-export async function downloadProtoFile(serviceName: string): Promise<string> {
+export async function downloadProtoFile(serviceName: string, branch: string = 'main'): Promise<string> {
   // 1. 验证配置
   const validation = validateAuthConfig()
   if (!validation.valid) {
@@ -49,7 +50,7 @@ export async function downloadProtoFile(serviceName: string): Promise<string> {
   ensureDir(serviceName.toLowerCase())
   const fileName = `${serviceName.toLowerCase()}/${serviceName.toLowerCase()}.proto`
   const filePath = protoDir ? `${protoDir}/${fileName}` : fileName
-  const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${filePath}`
+  const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${filePath}?ref=${branch}`
 
   try {
     // 4. 发送 GitHub API 请求
@@ -63,9 +64,23 @@ export async function downloadProtoFile(serviceName: string): Promise<string> {
 
     if (!response.ok) {
       if (response.status === 404) {
+        // 检查是否是分支不存在的问题
+        const branchCheckUrl = `https://api.github.com/repos/${owner}/${repo}/branches/${branch}`
+        const branchResponse = await fetch(branchCheckUrl, {
+          headers: {
+            'Authorization': `token ${token}`,
+            'Accept': 'application/vnd.github.v3+json',
+            'User-Agent': 'cpb-cli',
+          },
+        })
+
+        if (!branchResponse.ok) {
+          throw new Error(`Error: Branch '${branch}' not found in ${owner}/${repo}. Please check the branch name.`)
+        }
+
         throw new Error(
           `Proto 文件未找到: ${filePath}\n`
-          + `仓库: ${owner}/${repo}\n`
+          + `仓库: ${owner}/${repo} (分支: ${branch})\n`
           + '请检查:\n'
           + '  1. 文件路径是否正确\n'
           + '  2. 仓库配置是否正确 (使用 "cpb config --show" 查看)',
@@ -99,6 +114,14 @@ export async function downloadProtoFile(serviceName: string): Promise<string> {
   }
   catch (error) {
     if (error instanceof Error) {
+      // 检查是否是网络超时
+      if (error.name === 'AbortError' || error.message.includes('timeout')) {
+        throw new Error('Error: Request timeout. Please check your network connection and try again.')
+      }
+      // 检查是否是 rate limit
+      if (error.message.includes('rate limit') || error.message.includes('403')) {
+        throw new Error('Error: GitHub API rate limit exceeded. Please wait or use a token with higher limits.')
+      }
       throw error
     }
     throw new Error(`下载 proto 文件失败: ${String(error)}`)
@@ -111,11 +134,11 @@ export async function downloadProtoFile(serviceName: string): Promise<string> {
  * @param serviceNames 服务名列表
  * @returns Map<serviceName, protoContent>
  */
-export async function downloadProtoFiles(serviceNames: string[]): Promise<Map<string, string>> {
+export async function downloadProtoFiles(serviceNames: string[], branch: string = 'main'): Promise<Map<string, string>> {
   const results = new Map<string, string>()
 
   for (const serviceName of serviceNames) {
-    const content = await downloadProtoFile(serviceName)
+    const content = await downloadProtoFile(serviceName, branch)
     results.set(serviceName, content)
   }
 

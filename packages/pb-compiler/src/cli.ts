@@ -116,7 +116,7 @@ async function generateCommand(options: { config?: string }): Promise<void> {
 /**
  * sync 命令 - 同步所有 proto 文件
  */
-async function syncCommand(options: { config?: string }): Promise<void> {
+async function syncCommand(options: { config?: string, branch?: string }): Promise<void> {
   try {
     const configPath = options.config || './pb.config.json'
     console.log(`读取配置文件: ${configPath}`)
@@ -129,7 +129,8 @@ async function syncCommand(options: { config?: string }): Promise<void> {
       return
     }
 
-    console.log(`开始同步 ${pbConfig.services.length} 个服务的 proto 文件...`)
+    const branch = options.branch || 'main'
+    console.log(`开始同步 ${pbConfig.services.length} 个服务的 proto 文件 (分支: ${branch})...`)
 
     // 确保生成目录存在
     const outputDir = config.getOutputDir()
@@ -139,7 +140,7 @@ async function syncCommand(options: { config?: string }): Promise<void> {
     for (const serviceName of pbConfig.services) {
       try {
         console.log(`\n[${serviceName}] 下载中...`)
-        const protoContent = await downloadProtoFile(serviceName)
+        const protoContent = await downloadProtoFile(serviceName, branch)
 
         const protoPath = config.getProtoPath(serviceName)
         const protoDir = path.dirname(protoPath)
@@ -279,7 +280,7 @@ function configCommand(options: { owner?: string, repo?: string, protoDir?: stri
 /**
  * gen-go 命令 - 使用 protoc 生成 Go 代码
  */
-async function genGoCommand(options: { config?: string }): Promise<void> {
+async function genGoCommand(options: { config?: string, goOpt?: string[] }): Promise<void> {
   try {
     // 检查 protoc 是否安装
     try {
@@ -296,12 +297,24 @@ async function genGoCommand(options: { config?: string }): Promise<void> {
 
     // 检查 protoc-gen-go 是否安装
     try {
-      execSync('protoc-gen-go --version', { stdio: 'pipe' })
+      execSync('which protoc-gen-go', { stdio: 'pipe' })
     }
     catch {
       console.error('✗ 错误: 未找到 protoc-gen-go 插件')
       console.log('\n请先安装 Go protobuf 插件:')
       console.log('  go install google.golang.org/protobuf/cmd/protoc-gen-go@latest')
+      console.log('\n确保 $GOPATH/bin 在你的 PATH 中')
+      process.exit(1)
+    }
+
+    // 检查 protoc-gen-go-grpc 是否安装
+    try {
+      execSync('which protoc-gen-go-grpc', { stdio: 'pipe' })
+    }
+    catch {
+      console.error('✗ 错误: 未找到 protoc-gen-go-grpc 插件')
+      console.log('\n请先安装 Go gRPC 插件:')
+      console.log('  go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest')
       console.log('\n确保 $GOPATH/bin 在你的 PATH 中')
       process.exit(1)
     }
@@ -342,10 +355,26 @@ async function genGoCommand(options: { config?: string }): Promise<void> {
         const protobufBaseDir = config.getOutputDir()
 
         // 调用 protoc 生成 Go 代码
-        // --go_out=. 表示输出到当前目录
-        // --go_opt=paths=source_relative 表示使用相对路径
-        // 但我们需要输出到 pkg/pb，所以使用 module 参数
-        const cmd = `protoc -I="${protobufBaseDir}" --go_out="${goOutputDir}" --go_opt=paths=source_relative "${protoPath}"`
+        // --go_out 输出 Go 消息类型
+        // --go-grpc_out 输出 gRPC 服务代码
+        // --go_opt=paths=source_relative 使用相对路径
+
+        // 构建 --go_opt 参数
+        let goOptArgs = '--go_opt=paths=source_relative'
+        let goGrpcOptArgs = '--go-grpc_opt=paths=source_relative'
+
+        // 添加用户指定的 --go-opt 参数 (如 M 映射)
+        if (options.goOpt && options.goOpt.length > 0) {
+          for (const opt of options.goOpt) {
+            goOptArgs += ` --go_opt=${opt}`
+            // 如果是 M 映射，也需要添加到 go-grpc_opt
+            if (opt.startsWith('M')) {
+              goGrpcOptArgs += ` --go-grpc_opt=${opt}`
+            }
+          }
+        }
+
+        const cmd = `protoc -I="${protobufBaseDir}" --go_out="${goOutputDir}" ${goOptArgs} --go-grpc_out="${goOutputDir}" ${goGrpcOptArgs} "${protoPath}"`
 
         console.log(`[${serviceName}] 执行: ${cmd}`)
         execSync(cmd, { stdio: 'inherit' })
@@ -387,6 +416,7 @@ program
   .command('sync')
   .description('同步/下载所有 proto 文件')
   .option('-c, --config <path>', '配置文件路径', './pb.config.json')
+  .option('-b, --branch <branch>', '指定分支名', 'main')
   .action(syncCommand)
 
 program
@@ -407,6 +437,7 @@ program
   .command('gen-go')
   .description('使用 protoc 生成 Go 代码')
   .option('-c, --config <path>', '配置文件路径', './pb.config.json')
+  .option('--go-opt <opt...>', '传递给 protoc 的 --go_opt 参数 (如 Mproto=path)')
   .action(genGoCommand)
 
 // 解析命令行参数
