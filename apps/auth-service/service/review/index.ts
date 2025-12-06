@@ -5,7 +5,7 @@ import type {
   GetReviewsResponse,
   ReviewActionRequest,
   ReviewActionResponse,
-} from '../../protobuf/types/ssewiki'
+} from '../../protobuf/types/review_service'
 import { getReviewClient } from '../wiki-grpc-client'
 
 /**

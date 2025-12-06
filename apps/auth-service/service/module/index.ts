@@ -19,7 +19,7 @@ import type {
   RemoveModeratorResponse,
   UpdateModuleRequest,
   UpdateModuleResponse,
-} from '../../protobuf/types/ssewiki'
+} from '../../protobuf/types/module_service'
 import { getModuleClient } from '../wiki-grpc-client'
 
 /**

@@ -16,7 +16,7 @@ import type {
   RefreshRequest,
   RefreshResponse,
   RegisterResponse,
-} from '../../protobuf/types/authservice'
+} from '../../protobuf/types/auth_service'
 import process from 'node:process'
 import { AuthService } from '../../protobuf/protoclasses'
 

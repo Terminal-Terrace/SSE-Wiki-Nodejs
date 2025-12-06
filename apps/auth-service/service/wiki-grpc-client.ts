@@ -1,5 +1,8 @@
 import type { RpcClientConfig } from '@sse-wiki/rpc-client'
-import type * as SSEWikiTypes from '../protobuf/types/ssewiki'
+import type * as ArticleServiceTypes from '../protobuf/types/article_service'
+import type * as DiscussionServiceTypes from '../protobuf/types/discussion_service'
+import type * as ModuleServiceTypes from '../protobuf/types/module_service'
+import type * as ReviewServiceTypes from '../protobuf/types/review_service'
 import path from 'node:path'
 import process from 'node:process'
 import { RpcClient } from '@sse-wiki/rpc-client'
@@ -23,55 +26,55 @@ export class ModuleServiceClient {
   private rpcClient: RpcClient
 
   constructor(config?: ServiceConfig) {
-    const protoPath = path.join(import.meta.dirname, '..', 'protobuf', 'proto', 'ssewiki', 'ssewiki.proto')
+    const protoPath = path.join(import.meta.dirname, '..', 'protobuf', 'proto', 'module_service', 'module_service.proto')
 
     this.rpcClient = new RpcClient({
       protoPath,
-      packageName: 'ssewiki',
+      packageName: 'module_service',
       serviceClassName: 'ModuleService',
       serverAddress: config?.serverAddress || DEFAULT_WIKI_GRPC_ADDRESS,
       ...config?.rpcConfig,
     })
   }
 
-  async GetModuleTree(req: SSEWikiTypes.GetModuleTreeRequest): Promise<SSEWikiTypes.GetModuleTreeResponse> {
-    return this.rpcClient.call<SSEWikiTypes.GetModuleTreeRequest, SSEWikiTypes.GetModuleTreeResponse>('GetModuleTree', req)
+  async GetModuleTree(req: ModuleServiceTypes.GetModuleTreeRequest): Promise<ModuleServiceTypes.GetModuleTreeResponse> {
+    return this.rpcClient.call<ModuleServiceTypes.GetModuleTreeRequest, ModuleServiceTypes.GetModuleTreeResponse>('GetModuleTree', req)
   }
 
-  async GetModule(req: SSEWikiTypes.GetModuleRequest): Promise<SSEWikiTypes.GetModuleResponse> {
-    return this.rpcClient.call<SSEWikiTypes.GetModuleRequest, SSEWikiTypes.GetModuleResponse>('GetModule', req)
+  async GetModule(req: ModuleServiceTypes.GetModuleRequest): Promise<ModuleServiceTypes.GetModuleResponse> {
+    return this.rpcClient.call<ModuleServiceTypes.GetModuleRequest, ModuleServiceTypes.GetModuleResponse>('GetModule', req)
   }
 
-  async GetBreadcrumbs(req: SSEWikiTypes.GetBreadcrumbsRequest): Promise<SSEWikiTypes.GetBreadcrumbsResponse> {
-    return this.rpcClient.call<SSEWikiTypes.GetBreadcrumbsRequest, SSEWikiTypes.GetBreadcrumbsResponse>('GetBreadcrumbs', req)
+  async GetBreadcrumbs(req: ModuleServiceTypes.GetBreadcrumbsRequest): Promise<ModuleServiceTypes.GetBreadcrumbsResponse> {
+    return this.rpcClient.call<ModuleServiceTypes.GetBreadcrumbsRequest, ModuleServiceTypes.GetBreadcrumbsResponse>('GetBreadcrumbs', req)
   }
 
-  async CreateModule(req: SSEWikiTypes.CreateModuleRequest): Promise<SSEWikiTypes.CreateModuleResponse> {
-    return this.rpcClient.call<SSEWikiTypes.CreateModuleRequest, SSEWikiTypes.CreateModuleResponse>('CreateModule', req)
+  async CreateModule(req: ModuleServiceTypes.CreateModuleRequest): Promise<ModuleServiceTypes.CreateModuleResponse> {
+    return this.rpcClient.call<ModuleServiceTypes.CreateModuleRequest, ModuleServiceTypes.CreateModuleResponse>('CreateModule', req)
   }
 
-  async UpdateModule(req: SSEWikiTypes.UpdateModuleRequest): Promise<SSEWikiTypes.UpdateModuleResponse> {
-    return this.rpcClient.call<SSEWikiTypes.UpdateModuleRequest, SSEWikiTypes.UpdateModuleResponse>('UpdateModule', req)
+  async UpdateModule(req: ModuleServiceTypes.UpdateModuleRequest): Promise<ModuleServiceTypes.UpdateModuleResponse> {
+    return this.rpcClient.call<ModuleServiceTypes.UpdateModuleRequest, ModuleServiceTypes.UpdateModuleResponse>('UpdateModule', req)
   }
 
-  async DeleteModule(req: SSEWikiTypes.DeleteModuleRequest): Promise<SSEWikiTypes.DeleteModuleResponse> {
-    return this.rpcClient.call<SSEWikiTypes.DeleteModuleRequest, SSEWikiTypes.DeleteModuleResponse>('DeleteModule', req)
+  async DeleteModule(req: ModuleServiceTypes.DeleteModuleRequest): Promise<ModuleServiceTypes.DeleteModuleResponse> {
+    return this.rpcClient.call<ModuleServiceTypes.DeleteModuleRequest, ModuleServiceTypes.DeleteModuleResponse>('DeleteModule', req)
   }
 
-  async GetModerators(req: SSEWikiTypes.GetModeratorsRequest): Promise<SSEWikiTypes.GetModeratorsResponse> {
-    return this.rpcClient.call<SSEWikiTypes.GetModeratorsRequest, SSEWikiTypes.GetModeratorsResponse>('GetModerators', req)
+  async GetModerators(req: ModuleServiceTypes.GetModeratorsRequest): Promise<ModuleServiceTypes.GetModeratorsResponse> {
+    return this.rpcClient.call<ModuleServiceTypes.GetModeratorsRequest, ModuleServiceTypes.GetModeratorsResponse>('GetModerators', req)
   }
 
-  async AddModerator(req: SSEWikiTypes.AddModeratorRequest): Promise<SSEWikiTypes.AddModeratorResponse> {
-    return this.rpcClient.call<SSEWikiTypes.AddModeratorRequest, SSEWikiTypes.AddModeratorResponse>('AddModerator', req)
+  async AddModerator(req: ModuleServiceTypes.AddModeratorRequest): Promise<ModuleServiceTypes.AddModeratorResponse> {
+    return this.rpcClient.call<ModuleServiceTypes.AddModeratorRequest, ModuleServiceTypes.AddModeratorResponse>('AddModerator', req)
   }
 
-  async RemoveModerator(req: SSEWikiTypes.RemoveModeratorRequest): Promise<SSEWikiTypes.RemoveModeratorResponse> {
-    return this.rpcClient.call<SSEWikiTypes.RemoveModeratorRequest, SSEWikiTypes.RemoveModeratorResponse>('RemoveModerator', req)
+  async RemoveModerator(req: ModuleServiceTypes.RemoveModeratorRequest): Promise<ModuleServiceTypes.RemoveModeratorResponse> {
+    return this.rpcClient.call<ModuleServiceTypes.RemoveModeratorRequest, ModuleServiceTypes.RemoveModeratorResponse>('RemoveModerator', req)
   }
 
-  async HandleLock(req: SSEWikiTypes.HandleLockRequest): Promise<SSEWikiTypes.HandleLockResponse> {
-    return this.rpcClient.call<SSEWikiTypes.HandleLockRequest, SSEWikiTypes.HandleLockResponse>('HandleLock', req)
+  async HandleLock(req: ModuleServiceTypes.HandleLockRequest): Promise<ModuleServiceTypes.HandleLockResponse> {
+    return this.rpcClient.call<ModuleServiceTypes.HandleLockRequest, ModuleServiceTypes.HandleLockResponse>('HandleLock', req)
   }
 
   close(): void {
@@ -90,51 +93,51 @@ export class ArticleServiceClient {
   private rpcClient: RpcClient
 
   constructor(config?: ServiceConfig) {
-    const protoPath = path.join(import.meta.dirname, '..', 'protobuf', 'proto', 'ssewiki', 'ssewiki.proto')
+    const protoPath = path.join(import.meta.dirname, '..', 'protobuf', 'proto', 'article_service', 'article_service.proto')
 
     this.rpcClient = new RpcClient({
       protoPath,
-      packageName: 'ssewiki',
+      packageName: 'article_service',
       serviceClassName: 'ArticleService',
       serverAddress: config?.serverAddress || DEFAULT_WIKI_GRPC_ADDRESS,
       ...config?.rpcConfig,
     })
   }
 
-  async GetArticlesByModule(req: SSEWikiTypes.GetArticlesByModuleRequest): Promise<SSEWikiTypes.GetArticlesByModuleResponse> {
-    return this.rpcClient.call<SSEWikiTypes.GetArticlesByModuleRequest, SSEWikiTypes.GetArticlesByModuleResponse>('GetArticlesByModule', req)
+  async GetArticlesByModule(req: ArticleServiceTypes.GetArticlesByModuleRequest): Promise<ArticleServiceTypes.GetArticlesByModuleResponse> {
+    return this.rpcClient.call<ArticleServiceTypes.GetArticlesByModuleRequest, ArticleServiceTypes.GetArticlesByModuleResponse>('GetArticlesByModule', req)
   }
 
-  async GetArticle(req: SSEWikiTypes.GetArticleRequest): Promise<SSEWikiTypes.GetArticleResponse> {
-    return this.rpcClient.call<SSEWikiTypes.GetArticleRequest, SSEWikiTypes.GetArticleResponse>('GetArticle', req)
+  async GetArticle(req: ArticleServiceTypes.GetArticleRequest): Promise<ArticleServiceTypes.GetArticleResponse> {
+    return this.rpcClient.call<ArticleServiceTypes.GetArticleRequest, ArticleServiceTypes.GetArticleResponse>('GetArticle', req)
   }
 
-  async GetVersions(req: SSEWikiTypes.GetVersionsRequest): Promise<SSEWikiTypes.GetVersionsResponse> {
-    return this.rpcClient.call<SSEWikiTypes.GetVersionsRequest, SSEWikiTypes.GetVersionsResponse>('GetVersions', req)
+  async GetVersions(req: ArticleServiceTypes.GetVersionsRequest): Promise<ArticleServiceTypes.GetVersionsResponse> {
+    return this.rpcClient.call<ArticleServiceTypes.GetVersionsRequest, ArticleServiceTypes.GetVersionsResponse>('GetVersions', req)
   }
 
-  async GetVersion(req: SSEWikiTypes.GetVersionRequest): Promise<SSEWikiTypes.GetVersionResponse> {
-    return this.rpcClient.call<SSEWikiTypes.GetVersionRequest, SSEWikiTypes.GetVersionResponse>('GetVersion', req)
+  async GetVersion(req: ArticleServiceTypes.GetVersionRequest): Promise<ArticleServiceTypes.GetVersionResponse> {
+    return this.rpcClient.call<ArticleServiceTypes.GetVersionRequest, ArticleServiceTypes.GetVersionResponse>('GetVersion', req)
   }
 
-  async GetVersionDiff(req: SSEWikiTypes.GetVersionDiffRequest): Promise<SSEWikiTypes.GetVersionDiffResponse> {
-    return this.rpcClient.call<SSEWikiTypes.GetVersionDiffRequest, SSEWikiTypes.GetVersionDiffResponse>('GetVersionDiff', req)
+  async GetVersionDiff(req: ArticleServiceTypes.GetVersionDiffRequest): Promise<ArticleServiceTypes.GetVersionDiffResponse> {
+    return this.rpcClient.call<ArticleServiceTypes.GetVersionDiffRequest, ArticleServiceTypes.GetVersionDiffResponse>('GetVersionDiff', req)
   }
 
-  async CreateArticle(req: SSEWikiTypes.CreateArticleRequest): Promise<SSEWikiTypes.CreateArticleResponse> {
-    return this.rpcClient.call<SSEWikiTypes.CreateArticleRequest, SSEWikiTypes.CreateArticleResponse>('CreateArticle', req)
+  async CreateArticle(req: ArticleServiceTypes.CreateArticleRequest): Promise<ArticleServiceTypes.CreateArticleResponse> {
+    return this.rpcClient.call<ArticleServiceTypes.CreateArticleRequest, ArticleServiceTypes.CreateArticleResponse>('CreateArticle', req)
   }
 
-  async CreateSubmission(req: SSEWikiTypes.CreateSubmissionRequest): Promise<SSEWikiTypes.CreateSubmissionResponse> {
-    return this.rpcClient.call<SSEWikiTypes.CreateSubmissionRequest, SSEWikiTypes.CreateSubmissionResponse>('CreateSubmission', req)
+  async CreateSubmission(req: ArticleServiceTypes.CreateSubmissionRequest): Promise<ArticleServiceTypes.CreateSubmissionResponse> {
+    return this.rpcClient.call<ArticleServiceTypes.CreateSubmissionRequest, ArticleServiceTypes.CreateSubmissionResponse>('CreateSubmission', req)
   }
 
-  async UpdateBasicInfo(req: SSEWikiTypes.UpdateBasicInfoRequest): Promise<SSEWikiTypes.UpdateBasicInfoResponse> {
-    return this.rpcClient.call<SSEWikiTypes.UpdateBasicInfoRequest, SSEWikiTypes.UpdateBasicInfoResponse>('UpdateBasicInfo', req)
+  async UpdateBasicInfo(req: ArticleServiceTypes.UpdateBasicInfoRequest): Promise<ArticleServiceTypes.UpdateBasicInfoResponse> {
+    return this.rpcClient.call<ArticleServiceTypes.UpdateBasicInfoRequest, ArticleServiceTypes.UpdateBasicInfoResponse>('UpdateBasicInfo', req)
   }
 
-  async AddCollaborator(req: SSEWikiTypes.AddCollaboratorRequest): Promise<SSEWikiTypes.AddCollaboratorResponse> {
-    return this.rpcClient.call<SSEWikiTypes.AddCollaboratorRequest, SSEWikiTypes.AddCollaboratorResponse>('AddCollaborator', req)
+  async AddCollaborator(req: ArticleServiceTypes.AddCollaboratorRequest): Promise<ArticleServiceTypes.AddCollaboratorResponse> {
+    return this.rpcClient.call<ArticleServiceTypes.AddCollaboratorRequest, ArticleServiceTypes.AddCollaboratorResponse>('AddCollaborator', req)
   }
 
   close(): void {
@@ -153,27 +156,27 @@ export class ReviewServiceClient {
   private rpcClient: RpcClient
 
   constructor(config?: ServiceConfig) {
-    const protoPath = path.join(import.meta.dirname, '..', 'protobuf', 'proto', 'ssewiki', 'ssewiki.proto')
+    const protoPath = path.join(import.meta.dirname, '..', 'protobuf', 'proto', 'review_service', 'review_service.proto')
 
     this.rpcClient = new RpcClient({
       protoPath,
-      packageName: 'ssewiki',
+      packageName: 'review_service',
       serviceClassName: 'ReviewService',
       serverAddress: config?.serverAddress || DEFAULT_WIKI_GRPC_ADDRESS,
       ...config?.rpcConfig,
     })
   }
 
-  async GetReviews(req: SSEWikiTypes.GetReviewsRequest): Promise<SSEWikiTypes.GetReviewsResponse> {
-    return this.rpcClient.call<SSEWikiTypes.GetReviewsRequest, SSEWikiTypes.GetReviewsResponse>('GetReviews', req)
+  async GetReviews(req: ReviewServiceTypes.GetReviewsRequest): Promise<ReviewServiceTypes.GetReviewsResponse> {
+    return this.rpcClient.call<ReviewServiceTypes.GetReviewsRequest, ReviewServiceTypes.GetReviewsResponse>('GetReviews', req)
   }
 
-  async GetReviewDetail(req: SSEWikiTypes.GetReviewDetailRequest): Promise<SSEWikiTypes.GetReviewDetailResponse> {
-    return this.rpcClient.call<SSEWikiTypes.GetReviewDetailRequest, SSEWikiTypes.GetReviewDetailResponse>('GetReviewDetail', req)
+  async GetReviewDetail(req: ReviewServiceTypes.GetReviewDetailRequest): Promise<ReviewServiceTypes.GetReviewDetailResponse> {
+    return this.rpcClient.call<ReviewServiceTypes.GetReviewDetailRequest, ReviewServiceTypes.GetReviewDetailResponse>('GetReviewDetail', req)
   }
 
-  async ReviewAction(req: SSEWikiTypes.ReviewActionRequest): Promise<SSEWikiTypes.ReviewActionResponse> {
-    return this.rpcClient.call<SSEWikiTypes.ReviewActionRequest, SSEWikiTypes.ReviewActionResponse>('ReviewAction', req)
+  async ReviewAction(req: ReviewServiceTypes.ReviewActionRequest): Promise<ReviewServiceTypes.ReviewActionResponse> {
+    return this.rpcClient.call<ReviewServiceTypes.ReviewActionRequest, ReviewServiceTypes.ReviewActionResponse>('ReviewAction', req)
   }
 
   close(): void {
@@ -192,35 +195,35 @@ export class DiscussionServiceClient {
   private rpcClient: RpcClient
 
   constructor(config?: ServiceConfig) {
-    const protoPath = path.join(import.meta.dirname, '..', 'protobuf', 'proto', 'ssewiki', 'ssewiki.proto')
+    const protoPath = path.join(import.meta.dirname, '..', 'protobuf', 'proto', 'discussion_service', 'discussion_service.proto')
 
     this.rpcClient = new RpcClient({
       protoPath,
-      packageName: 'ssewiki',
+      packageName: 'discussion_service',
       serviceClassName: 'DiscussionService',
       serverAddress: config?.serverAddress || DEFAULT_WIKI_GRPC_ADDRESS,
       ...config?.rpcConfig,
     })
   }
 
-  async GetArticleComments(req: SSEWikiTypes.GetArticleCommentsRequest): Promise<SSEWikiTypes.GetArticleCommentsResponse> {
-    return this.rpcClient.call<SSEWikiTypes.GetArticleCommentsRequest, SSEWikiTypes.GetArticleCommentsResponse>('GetArticleComments', req)
+  async GetArticleComments(req: DiscussionServiceTypes.GetArticleCommentsRequest): Promise<DiscussionServiceTypes.GetArticleCommentsResponse> {
+    return this.rpcClient.call<DiscussionServiceTypes.GetArticleCommentsRequest, DiscussionServiceTypes.GetArticleCommentsResponse>('GetArticleComments', req)
   }
 
-  async CreateComment(req: SSEWikiTypes.CreateCommentRequest): Promise<SSEWikiTypes.CreateCommentResponse> {
-    return this.rpcClient.call<SSEWikiTypes.CreateCommentRequest, SSEWikiTypes.CreateCommentResponse>('CreateComment', req)
+  async CreateComment(req: DiscussionServiceTypes.CreateCommentRequest): Promise<DiscussionServiceTypes.CreateCommentResponse> {
+    return this.rpcClient.call<DiscussionServiceTypes.CreateCommentRequest, DiscussionServiceTypes.CreateCommentResponse>('CreateComment', req)
   }
 
-  async ReplyComment(req: SSEWikiTypes.ReplyCommentRequest): Promise<SSEWikiTypes.ReplyCommentResponse> {
-    return this.rpcClient.call<SSEWikiTypes.ReplyCommentRequest, SSEWikiTypes.ReplyCommentResponse>('ReplyComment', req)
+  async ReplyComment(req: DiscussionServiceTypes.ReplyCommentRequest): Promise<DiscussionServiceTypes.ReplyCommentResponse> {
+    return this.rpcClient.call<DiscussionServiceTypes.ReplyCommentRequest, DiscussionServiceTypes.ReplyCommentResponse>('ReplyComment', req)
   }
 
-  async UpdateComment(req: SSEWikiTypes.UpdateCommentRequest): Promise<SSEWikiTypes.UpdateCommentResponse> {
-    return this.rpcClient.call<SSEWikiTypes.UpdateCommentRequest, SSEWikiTypes.UpdateCommentResponse>('UpdateComment', req)
+  async UpdateComment(req: DiscussionServiceTypes.UpdateCommentRequest): Promise<DiscussionServiceTypes.UpdateCommentResponse> {
+    return this.rpcClient.call<DiscussionServiceTypes.UpdateCommentRequest, DiscussionServiceTypes.UpdateCommentResponse>('UpdateComment', req)
   }
 
-  async DeleteComment(req: SSEWikiTypes.DeleteCommentRequest): Promise<SSEWikiTypes.DeleteCommentResponse> {
-    return this.rpcClient.call<SSEWikiTypes.DeleteCommentRequest, SSEWikiTypes.DeleteCommentResponse>('DeleteComment', req)
+  async DeleteComment(req: DiscussionServiceTypes.DeleteCommentRequest): Promise<DiscussionServiceTypes.DeleteCommentResponse> {
+    return this.rpcClient.call<DiscussionServiceTypes.DeleteCommentRequest, DiscussionServiceTypes.DeleteCommentResponse>('DeleteComment', req)
   }
 
   close(): void {

@@ -9,7 +9,7 @@ import type {
   ReplyCommentResponse,
   UpdateCommentRequest,
   UpdateCommentResponse,
-} from '../../protobuf/types/ssewiki'
+} from '../../protobuf/types/discussion_service'
 import { getDiscussionClient } from '../wiki-grpc-client'
 
 /**

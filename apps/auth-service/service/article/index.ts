@@ -17,7 +17,7 @@ import type {
   AddCollaboratorRequest as GrpcAddCollaboratorRequest,
   UpdateBasicInfoRequest,
   UpdateBasicInfoResponse,
-} from '../../protobuf/types/ssewiki'
+} from '../../protobuf/types/article_service'
 import { getArticleClient } from '../wiki-grpc-client'
 
 /**
