@@ -4,9 +4,7 @@ import { AsyncLocalStorage } from 'node:async_hooks'
 const asyncLocalStorage = new AsyncLocalStorage<Context>()
 
 export function ContextMiddleware(ctx: Context, next: Next) {
-  asyncLocalStorage.run(ctx, () => {
-    next()
-  })
+  return asyncLocalStorage.run(ctx, () => next())
 }
 
 export function getCtx(): Context {
