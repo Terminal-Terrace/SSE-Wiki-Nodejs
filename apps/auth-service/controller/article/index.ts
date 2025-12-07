@@ -69,6 +69,22 @@ export const articleController = {
 
   /**
    * 获取文章详情
+   * GET /api/v1/articles/user-favour/:id
+   */
+  async getUserFavourArticle(ctx: Context) {
+    try {
+      const id = String(ctx.params.id)
+      const response = await articleService.getUserFavourArticles(id)
+      success(ctx, response.id)
+    }
+    catch (err: any) {
+      console.error('[getUserFavourArticle] gRPC error:', err)
+      error(ctx, 0, err.details || err.message || '获取用户ID')
+    }
+  },
+
+  /**
+   * 获取文章详情
    * GET /api/v1/articles/:id
    */
   async getArticle(ctx: Context) {

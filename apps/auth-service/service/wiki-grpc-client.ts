@@ -124,6 +124,10 @@ export class ArticleServiceClient {
     return this.rpcClient.call<ArticleServiceTypes.GetVersionDiffRequest, ArticleServiceTypes.GetVersionDiffResponse>('GetVersionDiff', req)
   }
 
+  async GetUserArticleFavourites(req: ArticleServiceTypes.GetArticleFavouritesRequest): Promise<ArticleServiceTypes.GetArticleFavouritesResponse> {
+    return this.rpcClient.call<ArticleServiceTypes.GetArticleFavouritesRequest, ArticleServiceTypes.GetArticleFavouritesResponse>('GetUserArticleFavourites', req)
+  }
+
   async CreateArticle(req: ArticleServiceTypes.CreateArticleRequest): Promise<ArticleServiceTypes.CreateArticleResponse> {
     return this.rpcClient.call<ArticleServiceTypes.CreateArticleRequest, ArticleServiceTypes.CreateArticleResponse>('CreateArticle', req)
   }

@@ -4,6 +4,8 @@ import type {
   CreateArticleResponse,
   CreateSubmissionRequest,
   CreateSubmissionResponse,
+  GetArticleFavouritesRequest,
+  GetArticleFavouritesResponse,
   GetArticleRequest,
   GetArticleResponse,
   GetArticlesByModuleRequest,
@@ -54,6 +56,14 @@ export const articleService = {
       user_role: userRole,
     }
     return getArticleClient().GetArticle(req)
+  },
+
+  /**
+   *
+   */
+  async getUserFavourArticles(userId: string): Promise<GetArticleFavouritesResponse> {
+    const req: GetArticleFavouritesRequest = { user_id: userId }
+    return getArticleClient().GetUserArticleFavourites(req)
   },
 
   /**
