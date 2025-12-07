@@ -73,13 +73,35 @@ export const articleController = {
    */
   async getUserFavourArticle(ctx: Context) {
     try {
-      const id = String(ctx.params.id)
-      const response = await articleService.getUserFavourArticles(id)
-      success(ctx, response.id)
+      const userId = String(ctx.params.id)
+
+      const articleLikeResp = await articleService.getUserFavourArticles(userId)
+      const articleIds = articleLikeResp.id
+
+      if (articleIds.length === 0) {
+        return success(ctx, [])
+      }
+
+      const UserNumId = Number.parseInt(userId, 10)
+
+      if (Number.isNaN(UserNumId)) {
+        return error(ctx, 1, '无效的用户ID')
+      }
+      const { userRole } = getUserInfo(ctx)
+
+      const articlePromises = articleIds.map(articleId =>
+        articleService.getArticle(articleId, UserNumId, userRole),
+      )
+
+      const articles = await Promise.all(articlePromises)
+      success(ctx, {
+        articles,
+        article_id: articleIds,
+      })
     }
     catch (err: any) {
       console.error('[getUserFavourArticle] gRPC error:', err)
-      error(ctx, 0, err.details || err.message || '获取用户ID')
+      error(ctx, 0, err.details || err.message)
     }
   },
 

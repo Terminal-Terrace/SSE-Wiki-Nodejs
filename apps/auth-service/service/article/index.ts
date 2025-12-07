@@ -59,7 +59,7 @@ export const articleService = {
   },
 
   /**
-   *
+   * 获取用户的收藏文章
    */
   async getUserFavourArticles(userId: string): Promise<GetArticleFavouritesResponse> {
     const req: GetArticleFavouritesRequest = { user_id: userId }

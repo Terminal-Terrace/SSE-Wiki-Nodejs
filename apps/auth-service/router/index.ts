@@ -53,7 +53,7 @@ const articleRouter = new Router({ prefix: '/api/v1/articles' })
 
 // 浏览功能（可选认证）
 articleRouter.get('/:id', articleController.getArticle)
-articleRouter.get('/user-favour/:id', articleController.getUserFavourArticle)
+articleRouter.get('/:id/user-favour', articleController.getUserFavourArticle)
 articleRouter.get('/:id/versions', articleController.getVersions)
 articleRouter.get('/:id/discussions', discussionController.getArticleComments)
 articleRouter.post('/:id/discussions', discussionController.createComment)
