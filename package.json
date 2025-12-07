@@ -17,7 +17,12 @@
     "create:app": "node scripts/create-app.js"
   },
   "dependencies": {
-    "dotenv": "^17.2.3"
+    "@types/ali-oss": "^6.16.13",
+    "ali-oss": "^6.23.0",
+    "co-body": "^6.2.0",
+    "dotenv": "^17.2.3",
+    "ioredis": "^5.8.2",
+    "mongoose": "^9.0.1"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^6.0.0",
