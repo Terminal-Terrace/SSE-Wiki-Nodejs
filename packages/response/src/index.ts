@@ -5,7 +5,7 @@ export async function responseMiddleware(ctx: Context, next: Next) {
     ctx.status = 200
     ctx.body = {
       data,
-      code: 0,
+      code: 100,
       message: '',
     }
   }

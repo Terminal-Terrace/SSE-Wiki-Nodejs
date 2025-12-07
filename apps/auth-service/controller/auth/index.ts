@@ -1,4 +1,5 @@
 import type { Context } from 'koa'
+import process from 'node:process'
 import { authService } from '../../service/auth'
 import {
   loginSchema,
@@ -14,7 +15,7 @@ const REFRESH_TOKEN_MAX_AGE = 7 * 24 * 60 * 60 * 1000 // 7 天
 const COOKIE_OPTIONS = {
   httpOnly: true,
   path: '/',
-  secure: false, // 开发环境设为 false
+  secure: process.env.NODE_ENV === 'production',
   sameSite: 'lax' as const,
 }
 
