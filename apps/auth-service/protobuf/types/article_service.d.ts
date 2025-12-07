@@ -67,14 +67,6 @@ export interface Version {
   created_at: string
 }
 
-export interface GetArticleFavouritesByUserIdRequest {
-  user_id: string
-}
-
-export interface GetArticleFavouritesByUserIdResponse {
-  id: number[]
-}
-
 export interface VersionDiff {
   base_content: string
   current_content: string
@@ -215,4 +207,12 @@ export interface AddCollaboratorRequest {
 
 export interface AddCollaboratorResponse {
 
+}
+
+export interface GetArticleFavouritesRequest {
+  user_id: string
+}
+
+export interface GetArticleFavouritesResponse {
+  id: number[]
 }
