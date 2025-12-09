@@ -19,6 +19,8 @@ import type {
   AddCollaboratorRequest as GrpcAddCollaboratorRequest,
   UpdateBasicInfoRequest,
   UpdateBasicInfoResponse,
+  UpdateUserFavouritesRequest,
+  UpdateUserFavouritesResponse,
 } from '../../protobuf/types/article_service'
 import { getArticleClient } from '../wiki-grpc-client'
 
@@ -64,6 +66,14 @@ export const articleService = {
   async getUserFavourArticles(userId: string): Promise<GetArticleFavouritesResponse> {
     const req: GetArticleFavouritesRequest = { user_id: userId }
     return getArticleClient().GetUserArticleFavourites(req)
+  },
+
+  /**
+   * 更新用户的收藏文章
+   */
+  async updateUserFavouriteArticles(userId: number, articleId: number, is_added: boolean): Promise<UpdateUserFavouritesResponse> {
+    const req: UpdateUserFavouritesRequest = { user_id: userId, article_id: articleId, is_add: is_added }
+    return getArticleClient().UpdateUserFavourites(req)
   },
 
   /**

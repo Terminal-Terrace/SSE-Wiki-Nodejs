@@ -60,6 +60,7 @@ articleRouter.post('/:id/discussions', discussionController.createComment)
 
 // 编辑功能（需要认证）
 articleRouter.post('/', articleController.createArticle)
+articleRouter.post('/update-user-favour', articleController.updateUserFavouriteArticles)
 articleRouter.post('/:id/submissions', articleController.createSubmission)
 articleRouter.patch('/:id/basic-info', articleController.updateBasicInfo)
 articleRouter.post('/:id/collaborators', articleController.addCollaborator)

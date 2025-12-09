@@ -5,6 +5,7 @@ import {
   createArticleSchema,
   submissionSchema,
   updateBasicInfoSchema,
+  updateUserFavouriteSchema,
 } from './schema'
 
 /**
@@ -64,6 +65,33 @@ export const articleController = {
     catch (err: any) {
       console.error('[getArticlesByModule] gRPC error:', err)
       error(ctx, 0, err.details || err.message || '获取文章列表失败')
+    }
+  },
+
+  /**
+   * 更新用户收藏文章
+   * POST /api/v1/articles/update-user-favour
+   */
+  async updateUserFavouriteArticles(ctx: Context) {
+    const result = updateUserFavouriteSchema.safeParse(ctx.request.body)
+    if (!result.success) {
+      return error(ctx, 1, result.error.issues[0]?.message || '参数错误')
+    }
+    try {
+      const { userId } = getUserInfo(ctx)
+      if (!userId) {
+        return error(ctx, 401, '未登录')
+      }
+      const rep = await articleService.updateUserFavouriteArticles(
+        userId,
+        result.data.article_id,
+        result.data.is_added,
+      )
+      success(ctx, rep.status)
+    }
+    catch (err: any) {
+      console.error('[updateArticleFavourites] gRPC error:', err)
+      error(ctx, 0, err.details || err.message || '更新用户收藏失败')
     }
   },
 
