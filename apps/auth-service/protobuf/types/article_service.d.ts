@@ -216,3 +216,13 @@ export interface GetArticleFavouritesRequest {
 export interface GetArticleFavouritesResponse {
   id: number[]
 }
+
+export interface UpdateUserFavouritesRequest {
+  user_id: number
+  article_id: number
+  is_add: boolean
+}
+
+export interface UpdateUserFavouritesResponse {
+  status: string
+}
