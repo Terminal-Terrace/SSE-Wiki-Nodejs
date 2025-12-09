@@ -250,9 +250,9 @@ service ArticleService {
   rpc GetVersion(GetVersionRequest) returns (GetVersionResponse);
   rpc GetVersionDiff(GetVersionDiffRequest) returns (GetVersionDiffResponse);
   rpc GetUserArticleFavourites(GetArticleFavouritesRequest) returns (GetArticleFavouritesResponse);
-  rpc UpdateUserFavourites(UpdateUserFavouritesRequest) returns (UpdateUserFavouritesResponse);
 
   // 编辑功能
+  rpc UpdateUserFavourites(UpdateUserFavouritesRequest) returns (UpdateUserFavouritesResponse);
   rpc CreateArticle(CreateArticleRequest) returns (CreateArticleResponse);
   rpc CreateSubmission(CreateSubmissionRequest) returns (CreateSubmissionResponse);
   rpc UpdateBasicInfo(UpdateBasicInfoRequest) returns (UpdateBasicInfoResponse);

@@ -78,12 +78,12 @@ export const articleController = {
       return error(ctx, 1, result.error.issues[0]?.message || '参数错误')
     }
     try {
-      const { userId } = getUserInfo(ctx)
-      if (!userId) {
-        return error(ctx, 401, '未登录')
-      }
+      // const { userId } = getUserInfo(ctx)
+      // if (!userId) {
+      //   return error(ctx, 401, '未登录')
+      // }
       const rep = await articleService.updateUserFavouriteArticles(
-        userId,
+        result.data.user_id,
         result.data.article_id,
         result.data.is_added,
       )

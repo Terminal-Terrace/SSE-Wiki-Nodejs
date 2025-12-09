@@ -18,6 +18,7 @@ export type CreateArticleRequest = z.infer<typeof createArticleSchema>
  * 更新用户收藏请求
  */
 export const updateUserFavouriteSchema = z.object({
+  user_id: z.number().int().positive(),
   article_id: z.number().int().positive(),
   is_added: z.boolean(),
 })
