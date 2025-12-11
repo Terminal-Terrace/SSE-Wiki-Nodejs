@@ -4,6 +4,7 @@ import { authController } from '../controller/auth'
 import { discussionController } from '../controller/discussion'
 import { moduleController } from '../controller/module'
 import { reviewController } from '../controller/review'
+import { userController } from '../controller/user'
 
 const router = new Router()
 
@@ -62,11 +63,15 @@ articleRouter.get('/:id/versions', articleController.getVersions)
 articleRouter.get('/:id/discussions', discussionController.getArticleComments)
 articleRouter.post('/:id/discussions', discussionController.createComment)
 
+// 协作者管理（需要认证）
+articleRouter.get('/:id/collaborators', articleController.getCollaborators)
+articleRouter.post('/:id/collaborators', articleController.addCollaborator)
+articleRouter.delete('/:id/collaborators/:userId', articleController.removeCollaborator)
+
 // 纯动态路由放最后
 articleRouter.get('/:id', articleController.getArticle)
 articleRouter.post('/:id/submissions', articleController.createSubmission)
 articleRouter.patch('/:id/basic-info', articleController.updateBasicInfo)
-articleRouter.post('/:id/collaborators', articleController.addCollaborator)
 
 // Version 路由 - /api/v1/versions/*
 const versionRouter = new Router({ prefix: '/api/v1/versions' })
@@ -102,5 +107,18 @@ discussionRouter.delete('/:id', discussionController.deleteComment)
 // 注册 discussion 路由
 router.use(discussionRouter.routes())
 router.use(discussionRouter.allowedMethods())
+
+// User 路由 - /api/v1/users/*
+const userRouter = new Router({ prefix: '/api/v1/users' })
+
+// 用户搜索（需要认证）
+userRouter.get('/search', userController.searchUsers)
+
+// 获取用户公开信息（可选认证）
+userRouter.get('/:id', userController.getUserById)
+
+// 注册 user 路由
+router.use(userRouter.routes())
+router.use(userRouter.allowedMethods())
 
 export default router

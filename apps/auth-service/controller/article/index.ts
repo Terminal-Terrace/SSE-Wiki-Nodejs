@@ -1,5 +1,6 @@
 import type { Context } from 'koa'
 import { articleService } from '../../service/article'
+import { userAggregatorService } from '../../service/user-aggregator'
 import {
   addCollaboratorSchema,
   createArticleSchema,
@@ -341,8 +342,45 @@ export const articleController = {
   },
 
   /**
+   * 获取文章协作者列表
+   * GET /api/v1/articles/:id/collaborators
+   *
+   * 返回聚合后的协作者信息，包含 user_id、username、avatar、role、created_at
+   */
+  async getCollaborators(ctx: Context) {
+    const articleId = Number.parseInt(ctx.params.id, 10)
+    if (Number.isNaN(articleId)) {
+      return error(ctx, 1, '无效的文章ID')
+    }
+
+    try {
+      const { userId, userRole } = getUserInfo(ctx)
+      const response = await articleService.getCollaborators(articleId, userId, userRole)
+
+      // 使用 UserAggregatorService 聚合用户信息（添加 avatar）
+      const enrichedCollaborators = await userAggregatorService.enrichCollaborators(
+        (response.collaborators || []).map(c => ({
+          user_id: c.user_id,
+          role: c.role,
+          created_at: c.created_at,
+        })),
+      )
+
+      success(ctx, enrichedCollaborators)
+    }
+    catch (err: any) {
+      console.error('[getCollaborators] gRPC error:', err)
+      error(ctx, 0, err.details || err.message || '获取协作者列表失败')
+    }
+  },
+
+  /**
    * 添加协作者
    * POST /api/v1/articles/:id/collaborators
+   *
+   * 验证：
+   * - 目标用户必须存在
+   * - moderator 不能添加 owner 角色
    */
   async addCollaborator(ctx: Context) {
     const articleId = Number.parseInt(ctx.params.id, 10)
@@ -361,6 +399,12 @@ export const articleController = {
         return error(ctx, 401, '未登录')
       }
 
+      // 验证目标用户存在
+      const targetUserExists = await userAggregatorService.userExists(result.data.user_id)
+      if (!targetUserExists) {
+        return error(ctx, 404, '目标用户不存在')
+      }
+
       await articleService.addCollaborator(
         articleId,
         result.data.user_id,
@@ -373,6 +417,32 @@ export const articleController = {
     catch (err: any) {
       console.error('[addCollaborator] gRPC error:', err)
       error(ctx, 0, err.details || err.message || '添加协作者失败')
+    }
+  },
+
+  /**
+   * 移除协作者
+   * DELETE /api/v1/articles/:id/collaborators/:userId
+   */
+  async removeCollaborator(ctx: Context) {
+    const articleId = Number.parseInt(ctx.params.id, 10)
+    const targetUserId = Number.parseInt(ctx.params.userId, 10)
+    if (Number.isNaN(articleId) || Number.isNaN(targetUserId)) {
+      return error(ctx, 1, '无效的ID')
+    }
+
+    try {
+      const { userId, userRole } = getUserInfo(ctx)
+      if (!userId) {
+        return error(ctx, 401, '未登录')
+      }
+
+      await articleService.removeCollaborator(articleId, targetUserId, userId, userRole)
+      success(ctx, { message: '移除成功' })
+    }
+    catch (err: any) {
+      console.error('[removeCollaborator] gRPC error:', err)
+      error(ctx, 0, err.details || err.message || '移除协作者失败')
     }
   },
 }
