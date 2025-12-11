@@ -94,3 +94,29 @@ export interface UpdateProfileRequest {
 export interface UpdateProfileResponse {
   user: AuthUser
 }
+
+export interface PublicUserInfo {
+  id: number
+  username: string
+  avatar: string
+}
+
+export interface SearchUsersRequest {
+  keyword: string
+  exclude_user_id: number
+  page: number
+  page_size: number
+}
+
+export interface SearchUsersResponse {
+  users: PublicUserInfo[]
+  total: string
+}
+
+export interface GetUsersByIdsRequest {
+  user_ids: number[]
+}
+
+export interface GetUsersByIdsResponse {
+  users: PublicUserInfo[]
+}

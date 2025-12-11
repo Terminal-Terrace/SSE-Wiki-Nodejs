@@ -76,6 +76,14 @@ export class AuthService {
     return this.rpcClient.call<AuthServiceTypes.UpdateProfileRequest, AuthServiceTypes.UpdateProfileResponse>('UpdateProfile', req)
   }
 
+  async SearchUsers(req: AuthServiceTypes.SearchUsersRequest): Promise<AuthServiceTypes.SearchUsersResponse> {
+    return this.rpcClient.call<AuthServiceTypes.SearchUsersRequest, AuthServiceTypes.SearchUsersResponse>('SearchUsers', req)
+  }
+
+  async GetUsersByIds(req: AuthServiceTypes.GetUsersByIdsRequest): Promise<AuthServiceTypes.GetUsersByIdsResponse> {
+    return this.rpcClient.call<AuthServiceTypes.GetUsersByIdsRequest, AuthServiceTypes.GetUsersByIdsResponse>('GetUsersByIds', req)
+  }
+
   /**
    * 关闭 gRPC 连接
    */
@@ -160,8 +168,16 @@ export class ArticleService {
     return this.rpcClient.call<ArticleServiceTypes.UpdateBasicInfoRequest, ArticleServiceTypes.UpdateBasicInfoResponse>('UpdateBasicInfo', req)
   }
 
+  async GetCollaborators(req: ArticleServiceTypes.GetCollaboratorsRequest): Promise<ArticleServiceTypes.GetCollaboratorsResponse> {
+    return this.rpcClient.call<ArticleServiceTypes.GetCollaboratorsRequest, ArticleServiceTypes.GetCollaboratorsResponse>('GetCollaborators', req)
+  }
+
   async AddCollaborator(req: ArticleServiceTypes.AddCollaboratorRequest): Promise<ArticleServiceTypes.AddCollaboratorResponse> {
     return this.rpcClient.call<ArticleServiceTypes.AddCollaboratorRequest, ArticleServiceTypes.AddCollaboratorResponse>('AddCollaborator', req)
+  }
+
+  async RemoveCollaborator(req: ArticleServiceTypes.RemoveCollaboratorRequest): Promise<ArticleServiceTypes.RemoveCollaboratorResponse> {
+    return this.rpcClient.call<ArticleServiceTypes.RemoveCollaboratorRequest, ArticleServiceTypes.RemoveCollaboratorResponse>('RemoveCollaborator', req)
   }
 
   /**
