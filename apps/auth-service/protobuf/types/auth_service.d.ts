@@ -14,6 +14,7 @@ export interface AuthUser {
   username: string
   email: string
   role: string
+  avatar: string
 }
 
 export interface CodeRequest {
@@ -82,4 +83,14 @@ export interface RegisterRequest {
 export interface RegisterResponse {
   refresh_token: string
   redirect_url: string
+}
+
+export interface UpdateProfileRequest {
+  user_id: string
+  avatar: string
+  username: string
+}
+
+export interface UpdateProfileResponse {
+  user: AuthUser
 }

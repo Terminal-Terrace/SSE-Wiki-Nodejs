@@ -8,6 +8,7 @@ export interface ArticleListItem {
   created_by: number
   created_at: string
   updated_at: string
+  summary: string
 }
 
 export interface Article {
