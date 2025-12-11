@@ -5,6 +5,7 @@ import {
   createArticleSchema,
   submissionSchema,
   updateBasicInfoSchema,
+  updateUserFavouriteSchema,
 } from './schema'
 
 /**
@@ -64,6 +65,71 @@ export const articleController = {
     catch (err: any) {
       console.error('[getArticlesByModule] gRPC error:', err)
       error(ctx, 0, err.details || err.message || '获取文章列表失败')
+    }
+  },
+
+  /**
+   * 更新用户收藏文章
+   * POST /api/v1/articles/update-user-favour
+   */
+  async updateUserFavouriteArticles(ctx: Context) {
+    const result = updateUserFavouriteSchema.safeParse(ctx.request.body)
+    if (!result.success) {
+      return error(ctx, 1, result.error.issues[0]?.message || '参数错误')
+    }
+    try {
+      // const { userId } = getUserInfo(ctx)
+      // if (!userId) {
+      //   return error(ctx, 401, '未登录')
+      // }
+      const rep = await articleService.updateUserFavouriteArticles(
+        result.data.user_id,
+        result.data.article_id,
+        result.data.is_added,
+      )
+      success(ctx, rep.status)
+    }
+    catch (err: any) {
+      console.error('[updateArticleFavourites] gRPC error:', err)
+      error(ctx, 0, err.details || err.message || '更新用户收藏失败')
+    }
+  },
+
+  /**
+   * 获取文章详情
+   * GET /api/v1/articles/user-favour/:id
+   */
+  async getUserFavourArticle(ctx: Context) {
+    try {
+      const userId = String(ctx.params.id)
+
+      const articleLikeResp = await articleService.getUserFavourArticles(userId)
+      const articleIds = articleLikeResp.id
+
+      if (articleIds.length === 0) {
+        return success(ctx, [])
+      }
+
+      const UserNumId = Number.parseInt(userId, 10)
+
+      if (Number.isNaN(UserNumId)) {
+        return error(ctx, 1, '无效的用户ID')
+      }
+      const { userRole } = getUserInfo(ctx)
+
+      const articlePromises = articleIds.map(articleId =>
+        articleService.getArticle(articleId, UserNumId, userRole),
+      )
+
+      const articles = await Promise.all(articlePromises)
+      success(ctx, {
+        articles,
+        article_id: articleIds,
+      })
+    }
+    catch (err: any) {
+      console.error('[getUserFavourArticle] gRPC error:', err)
+      error(ctx, 0, err.details || err.message)
     }
   },
 

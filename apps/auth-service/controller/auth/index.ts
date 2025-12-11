@@ -6,6 +6,7 @@ import {
   preloginSchema,
   registerSchema,
   sendCodeSchema,
+  updateProfileSchema,
 } from './schema'
 
 // Cookie 配置常量
@@ -208,6 +209,31 @@ export const authController = {
     }
 
     success(ctx)
+  },
+
+  /**
+   * 更新用户资料
+   * PATCH /api/v1/auth/profile
+   */
+  async updateProfile(ctx: Context) {
+    const userId = ctx.state.user?.user_id
+    if (!userId) {
+      return error(ctx, 401, '未登录')
+    }
+
+    const result = updateProfileSchema.safeParse(ctx.request.body)
+    if (!result.success) {
+      return error(ctx, 1, result.error.issues[0]?.message || '参数错误')
+    }
+
+    try {
+      const response = await authService.updateProfile(userId, result.data)
+      success(ctx, response.user)
+    }
+    catch (err: any) {
+      console.error('[updateProfile] gRPC error:', err)
+      error(ctx, 0, err.details || err.message || '更新资料失败')
+    }
   },
 }
 

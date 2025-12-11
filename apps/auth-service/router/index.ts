@@ -17,6 +17,7 @@ authRouter.post('/code', authController.sendCode)
 authRouter.post('/register', authController.register)
 authRouter.post('/refresh', authController.refresh)
 authRouter.post('/logout', authController.logout)
+authRouter.patch('/profile', authController.updateProfile)
 
 // Module 路由 - /api/v1/modules/*
 const moduleRouter = new Router({ prefix: '/api/v1/modules' })
@@ -51,14 +52,18 @@ router.use(moduleRouter.allowedMethods())
 // Article 路由 - /api/v1/articles/*
 const articleRouter = new Router({ prefix: '/api/v1/articles' })
 
-// 浏览功能（可选认证）
-articleRouter.get('/:id', articleController.getArticle)
+// 编辑功能（需要认证）- 静态路由放前面
+articleRouter.post('/', articleController.createArticle)
+articleRouter.post('/update-user-favour', articleController.updateUserFavouriteArticles)
+
+// 浏览功能（可选认证）- 带子路径的动态路由放在纯动态路由前面
+articleRouter.get('/:id/user-favour', articleController.getUserFavourArticle)
 articleRouter.get('/:id/versions', articleController.getVersions)
 articleRouter.get('/:id/discussions', discussionController.getArticleComments)
 articleRouter.post('/:id/discussions', discussionController.createComment)
 
-// 编辑功能（需要认证）
-articleRouter.post('/', articleController.createArticle)
+// 纯动态路由放最后
+articleRouter.get('/:id', articleController.getArticle)
 articleRouter.post('/:id/submissions', articleController.createSubmission)
 articleRouter.patch('/:id/basic-info', articleController.updateBasicInfo)
 articleRouter.post('/:id/collaborators', articleController.addCollaborator)

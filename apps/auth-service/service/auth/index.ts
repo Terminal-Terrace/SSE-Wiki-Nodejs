@@ -1,10 +1,11 @@
-import type { LoginRequest, RegisterRequest, SendCodeRequest } from '../../controller/auth/schema'
+import type { LoginRequest, RegisterRequest, SendCodeRequest, UpdateProfileRequest } from '../../controller/auth/schema'
 import type {
   CodeRequest,
   CodeResponse,
   CodeType,
   LoginRequest as GrpcLoginRequest,
   RegisterRequest as GrpcRegisterRequest,
+  UpdateProfileRequest as GrpcUpdateProfileRequest,
   InfoRequest,
   InfoResponse,
   LoginResponse,
@@ -16,6 +17,7 @@ import type {
   RefreshRequest,
   RefreshResponse,
   RegisterResponse,
+  UpdateProfileResponse,
 } from '../../protobuf/types/auth_service'
 import process from 'node:process'
 import { AuthService } from '../../protobuf/protoclasses'
@@ -111,6 +113,18 @@ export const authService = {
   async logout(userId: string): Promise<LogoutResponse> {
     const req: LogoutRequest = { user_id: userId }
     return authClient.Logout(req)
+  },
+
+  /**
+   * 更新用户资料
+   */
+  async updateProfile(userId: string, data: UpdateProfileRequest): Promise<UpdateProfileResponse> {
+    const req: GrpcUpdateProfileRequest = {
+      user_id: userId,
+      avatar: data.avatar || '',
+      username: data.username || '',
+    }
+    return authClient.UpdateProfile(req)
   },
 }
 

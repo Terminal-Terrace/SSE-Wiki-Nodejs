@@ -28,8 +28,15 @@ export const sendCodeSchema = z.object({
   type: z.enum(['registration', 'password_reset']),
 })
 
+// UpdateProfile 请求
+export const updateProfileSchema = z.object({
+  avatar: z.string().url('头像必须是有效的 URL').optional(),
+  username: z.string().min(3, '用户名至少3个字符').max(50, '用户名最多50个字符').optional(),
+})
+
 // 类型导出
 export type PreloginRequest = z.infer<typeof preloginSchema>
 export type LoginRequest = z.infer<typeof loginSchema>
 export type RegisterRequest = z.infer<typeof registerSchema>
 export type SendCodeRequest = z.infer<typeof sendCodeSchema>
+export type UpdateProfileRequest = z.infer<typeof updateProfileSchema>

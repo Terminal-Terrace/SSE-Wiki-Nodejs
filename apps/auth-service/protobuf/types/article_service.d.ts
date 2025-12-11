@@ -8,6 +8,7 @@ export interface ArticleListItem {
   created_by: number
   created_at: string
   updated_at: string
+  summary: string
 }
 
 export interface Article {
@@ -215,4 +216,14 @@ export interface GetArticleFavouritesRequest {
 
 export interface GetArticleFavouritesResponse {
   id: number[]
+}
+
+export interface UpdateUserFavouritesRequest {
+  user_id: number
+  article_id: number
+  is_add: boolean
+}
+
+export interface UpdateUserFavouritesResponse {
+  status: string
 }

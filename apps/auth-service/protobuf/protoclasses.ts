@@ -72,6 +72,10 @@ export class AuthService {
     return this.rpcClient.call<AuthServiceTypes.RegisterRequest, AuthServiceTypes.RegisterResponse>('Register', req)
   }
 
+  async UpdateProfile(req: AuthServiceTypes.UpdateProfileRequest): Promise<AuthServiceTypes.UpdateProfileResponse> {
+    return this.rpcClient.call<AuthServiceTypes.UpdateProfileRequest, AuthServiceTypes.UpdateProfileResponse>('UpdateProfile', req)
+  }
+
   /**
    * 关闭 gRPC 连接
    */
@@ -138,6 +142,10 @@ export class ArticleService {
 
   async GetUserArticleFavourites(req: ArticleServiceTypes.GetArticleFavouritesRequest): Promise<ArticleServiceTypes.GetArticleFavouritesResponse> {
     return this.rpcClient.call<ArticleServiceTypes.GetArticleFavouritesRequest, ArticleServiceTypes.GetArticleFavouritesResponse>('GetUserArticleFavourites', req)
+  }
+
+  async UpdateUserFavourites(req: ArticleServiceTypes.UpdateUserFavouritesRequest): Promise<ArticleServiceTypes.UpdateUserFavouritesResponse> {
+    return this.rpcClient.call<ArticleServiceTypes.UpdateUserFavouritesRequest, ArticleServiceTypes.UpdateUserFavouritesResponse>('UpdateUserFavourites', req)
   }
 
   async CreateArticle(req: ArticleServiceTypes.CreateArticleRequest): Promise<ArticleServiceTypes.CreateArticleResponse> {
