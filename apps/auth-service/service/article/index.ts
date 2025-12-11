@@ -10,6 +10,8 @@ import type {
   GetArticleResponse,
   GetArticlesByModuleRequest,
   GetArticlesByModuleResponse,
+  GetCollaboratorsRequest,
+  GetCollaboratorsResponse,
   GetVersionDiffRequest,
   GetVersionDiffResponse,
   GetVersionRequest,
@@ -17,6 +19,8 @@ import type {
   GetVersionsRequest,
   GetVersionsResponse,
   AddCollaboratorRequest as GrpcAddCollaboratorRequest,
+  RemoveCollaboratorRequest,
+  RemoveCollaboratorResponse,
   UpdateBasicInfoRequest,
   UpdateBasicInfoResponse,
   UpdateUserFavouritesRequest,
@@ -174,6 +178,22 @@ export const articleService = {
   },
 
   /**
+   * 获取文章协作者列表
+   */
+  async getCollaborators(
+    articleId: number,
+    userId: number,
+    userRole: string,
+  ): Promise<GetCollaboratorsResponse> {
+    const req: GetCollaboratorsRequest = {
+      article_id: articleId,
+      user_id: userId,
+      user_role: userRole,
+    }
+    return getArticleClient().GetCollaborators(req)
+  },
+
+  /**
    * 添加协作者
    */
   async addCollaborator(
@@ -191,6 +211,24 @@ export const articleService = {
       user_role: userRole,
     }
     return getArticleClient().AddCollaborator(req)
+  },
+
+  /**
+   * 移除协作者
+   */
+  async removeCollaborator(
+    articleId: number,
+    targetUserId: number,
+    userId: number,
+    userRole: string,
+  ): Promise<RemoveCollaboratorResponse> {
+    const req: RemoveCollaboratorRequest = {
+      article_id: articleId,
+      target_user_id: targetUserId,
+      user_id: userId,
+      user_role: userRole,
+    }
+    return getArticleClient().RemoveCollaborator(req)
   },
 }
 

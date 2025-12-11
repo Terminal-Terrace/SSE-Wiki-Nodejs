@@ -144,8 +144,16 @@ export class ArticleServiceClient {
     return this.rpcClient.call<ArticleServiceTypes.UpdateBasicInfoRequest, ArticleServiceTypes.UpdateBasicInfoResponse>('UpdateBasicInfo', req)
   }
 
+  async GetCollaborators(req: ArticleServiceTypes.GetCollaboratorsRequest): Promise<ArticleServiceTypes.GetCollaboratorsResponse> {
+    return this.rpcClient.call<ArticleServiceTypes.GetCollaboratorsRequest, ArticleServiceTypes.GetCollaboratorsResponse>('GetCollaborators', req)
+  }
+
   async AddCollaborator(req: ArticleServiceTypes.AddCollaboratorRequest): Promise<ArticleServiceTypes.AddCollaboratorResponse> {
     return this.rpcClient.call<ArticleServiceTypes.AddCollaboratorRequest, ArticleServiceTypes.AddCollaboratorResponse>('AddCollaborator', req)
+  }
+
+  async RemoveCollaborator(req: ArticleServiceTypes.RemoveCollaboratorRequest): Promise<ArticleServiceTypes.RemoveCollaboratorResponse> {
+    return this.rpcClient.call<ArticleServiceTypes.RemoveCollaboratorRequest, ArticleServiceTypes.RemoveCollaboratorResponse>('RemoveCollaborator', req)
   }
 
   close(): void {

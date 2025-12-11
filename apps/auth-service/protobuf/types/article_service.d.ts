@@ -210,6 +210,34 @@ export interface AddCollaboratorResponse {
 
 }
 
+export interface ArticleCollaboratorInfo {
+  user_id: number
+  username: string
+  role: string
+  created_at: string
+}
+
+export interface GetCollaboratorsRequest {
+  article_id: number
+  user_id: number
+  user_role: string
+}
+
+export interface GetCollaboratorsResponse {
+  collaborators: ArticleCollaboratorInfo[]
+}
+
+export interface RemoveCollaboratorRequest {
+  article_id: number
+  target_user_id: number
+  user_id: number
+  user_role: string
+}
+
+export interface RemoveCollaboratorResponse {
+
+}
+
 export interface GetArticleFavouritesRequest {
   user_id: string
 }
