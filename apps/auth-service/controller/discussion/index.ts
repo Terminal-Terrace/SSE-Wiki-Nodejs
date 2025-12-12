@@ -1,5 +1,6 @@
 import type { Context } from 'koa'
 import { discussionService } from '../../service/discussion'
+import { userAggregatorService } from '../../service/user-aggregator'
 import { createCommentSchema, replyCommentSchema, updateCommentSchema } from './schema'
 
 /**
@@ -46,8 +47,16 @@ export const discussionController = {
       }
 
       const response = await discussionService.getArticleComments(articleId)
+
+      // 递归聚合评论和回复的用户信息（支持无限层级嵌套）
+      const enrichedComments = await userAggregatorService.enrichNested(response.comments || [], {
+        fields: { created_by: 'creator' },
+        nestedArrayField: 'replies',
+        // 不需要 nestedConfig，enrichNested 会自动使用当前 config 进行递归
+      })
+
       success(ctx, {
-        comments: response.comments,
+        comments: enrichedComments,
         total: response.total,
       })
     }

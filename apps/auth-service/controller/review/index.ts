@@ -1,5 +1,6 @@
 import type { Context } from 'koa'
 import { reviewService } from '../../service/review'
+import { userAggregatorService } from '../../service/user-aggregator'
 import { reviewActionSchema } from './schema'
 
 /**
@@ -44,7 +45,13 @@ export const reviewController = {
       const articleId = Number.parseInt(ctx.query.article_id as string, 10) || 0
 
       const response = await reviewService.getReviews(status, articleId)
-      success(ctx, response.submissions)
+
+      // 聚合提交者和审核者信息
+      const enrichedSubmissions = await userAggregatorService.enrichArray(response.submissions || [], {
+        fields: { submitted_by: 'submitter', reviewed_by: 'reviewer' },
+      })
+
+      success(ctx, enrichedSubmissions)
     }
     catch (err: any) {
       console.error('[getReviews] gRPC error:', err)
@@ -65,7 +72,43 @@ export const reviewController = {
 
       const { userId, userRole } = getUserInfo(ctx)
       const response = await reviewService.getReviewDetail(submissionId, userId, userRole)
-      success(ctx, response.detail)
+
+      // 聚合审核详情中的用户信息
+      const detail = response.detail
+      if (detail) {
+        // 聚合 submission 的提交者和审核者
+        const enrichedSubmission = detail.submission
+          ? await userAggregatorService.enrichObject(detail.submission, {
+              fields: { submitted_by: 'submitter', reviewed_by: 'reviewer' },
+            })
+          : null
+
+        // 聚合版本的作者信息
+        const versionConfig = { fields: { author_id: 'author' } }
+        const enrichedProposedVersion = detail.proposed_version
+          ? await userAggregatorService.enrichObject(detail.proposed_version, versionConfig)
+          : null
+        const enrichedBaseVersion = detail.base_version
+          ? await userAggregatorService.enrichObject(detail.base_version, versionConfig)
+          : null
+
+        // 聚合文章的作者信息
+        const enrichedArticle = detail.article
+          ? await userAggregatorService.enrichObject(detail.article, {
+              fields: { created_by: 'author' },
+            })
+          : null
+
+        success(ctx, {
+          submission: enrichedSubmission,
+          proposed_version: enrichedProposedVersion,
+          base_version: enrichedBaseVersion,
+          article: enrichedArticle,
+        })
+      }
+      else {
+        success(ctx, null)
+      }
     }
     catch (err: any) {
       console.error('[getReviewDetail] gRPC error:', err)
