@@ -10,6 +10,7 @@ export interface ModuleTreeNode {
   owner_id: number
   is_moderator: boolean
   children: ModuleTreeNode[]
+  role: string
 }
 
 export interface Module {
