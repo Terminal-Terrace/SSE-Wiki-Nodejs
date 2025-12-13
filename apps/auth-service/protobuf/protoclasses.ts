@@ -180,6 +180,10 @@ export class ArticleService {
     return this.rpcClient.call<ArticleServiceTypes.RemoveCollaboratorRequest, ArticleServiceTypes.RemoveCollaboratorResponse>('RemoveCollaborator', req)
   }
 
+  async DeleteArticle(req: ArticleServiceTypes.DeleteArticleRequest): Promise<ArticleServiceTypes.DeleteArticleResponse> {
+    return this.rpcClient.call<ArticleServiceTypes.DeleteArticleRequest, ArticleServiceTypes.DeleteArticleResponse>('DeleteArticle', req)
+  }
+
   /**
    * 关闭 gRPC 连接
    */

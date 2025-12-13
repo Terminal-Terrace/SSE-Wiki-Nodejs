@@ -93,8 +93,6 @@ export interface GetReviewsResponse {
 
 export interface GetReviewDetailRequest {
   submission_id: number
-  user_id: number
-  user_role: string
 }
 
 export interface ReviewDetail {
@@ -113,8 +111,6 @@ export interface ReviewActionRequest {
   action: string
   notes: string
   merged_content: string
-  reviewer_id: number
-  user_role: string
 }
 
 export interface ReviewActionResponse {
