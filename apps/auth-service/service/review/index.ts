@@ -1,3 +1,4 @@
+import type { Metadata } from '@sse-wiki/rpc-client'
 import type {
   GetReviewDetailRequest,
   GetReviewDetailResponse,
@@ -10,6 +11,7 @@ import { getReviewClient } from '../wiki-grpc-client'
 
 /**
  * Review Service - 封装 gRPC 调用
+ * 用户信息通过 JWT metadata 传递
  */
 export const reviewService = {
   /**
@@ -18,12 +20,13 @@ export const reviewService = {
   async getReviews(
     status: string = '',
     articleId: number = 0,
+    metadata?: Metadata,
   ): Promise<GetReviewsResponse> {
     const req: GetReviewsRequest = {
       status,
       article_id: articleId,
     }
-    return getReviewClient().GetReviews(req)
+    return getReviewClient().GetReviews(req, metadata)
   },
 
   /**
@@ -31,15 +34,10 @@ export const reviewService = {
    */
   async getReviewDetail(
     submissionId: number,
-    userId: number,
-    userRole: string,
+    metadata?: Metadata,
   ): Promise<GetReviewDetailResponse> {
-    const req: GetReviewDetailRequest = {
-      submission_id: submissionId,
-      user_id: userId,
-      user_role: userRole,
-    }
-    return getReviewClient().GetReviewDetail(req)
+    const req: GetReviewDetailRequest = { submission_id: submissionId }
+    return getReviewClient().GetReviewDetail(req, metadata)
   },
 
   /**
@@ -50,18 +48,15 @@ export const reviewService = {
     action: string,
     notes: string,
     mergedContent: string,
-    reviewerId: number,
-    userRole: string,
+    metadata?: Metadata,
   ): Promise<ReviewActionResponse> {
     const req: ReviewActionRequest = {
       submission_id: submissionId,
       action,
       notes,
       merged_content: mergedContent,
-      reviewer_id: reviewerId,
-      user_role: userRole,
     }
-    return getReviewClient().ReviewAction(req)
+    return getReviewClient().ReviewAction(req, metadata)
   },
 }
 

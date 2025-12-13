@@ -1,6 +1,7 @@
 import type { Context } from 'koa'
 import { reviewService } from '../../service/review'
 import { userAggregatorService } from '../../service/user-aggregator'
+import { createMetadataFromContext } from '../../utils/grpc-metadata'
 import { reviewActionSchema } from './schema'
 
 /**
@@ -44,7 +45,8 @@ export const reviewController = {
       const status = (ctx.query.status as string) || ''
       const articleId = Number.parseInt(ctx.query.article_id as string, 10) || 0
 
-      const response = await reviewService.getReviews(status, articleId)
+      const metadata = createMetadataFromContext(ctx)
+      const response = await reviewService.getReviews(status, articleId, metadata)
 
       // 聚合提交者和审核者信息
       const enrichedSubmissions = await userAggregatorService.enrichArray(response.submissions || [], {
@@ -70,8 +72,8 @@ export const reviewController = {
         return error(ctx, 1, '无效的提交ID')
       }
 
-      const { userId, userRole } = getUserInfo(ctx)
-      const response = await reviewService.getReviewDetail(submissionId, userId, userRole)
+      const metadata = createMetadataFromContext(ctx)
+      const response = await reviewService.getReviewDetail(submissionId, metadata)
 
       // 聚合审核详情中的用户信息
       const detail = response.detail
@@ -132,18 +134,18 @@ export const reviewController = {
     }
 
     try {
-      const { userId, userRole } = getUserInfo(ctx)
+      const { userId } = getUserInfo(ctx)
       if (!userId) {
         return error(ctx, 401, '未登录')
       }
 
+      const metadata = createMetadataFromContext(ctx)
       const response = await reviewService.reviewAction(
         submissionId,
         result.data.action,
         result.data.notes,
         result.data.merged_content,
-        userId,
-        userRole,
+        metadata,
       )
 
       // Handle conflict response

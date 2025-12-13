@@ -1,3 +1,4 @@
+import type { Metadata } from '@sse-wiki/rpc-client'
 import type {
   AddModeratorResponse,
   CreateModuleRequest,
@@ -24,30 +25,31 @@ import { getModuleClient } from '../wiki-grpc-client'
 
 /**
  * Module Service - 封装 gRPC 调用
+ * 用户信息通过 JWT metadata 传递
  */
 export const moduleService = {
   /**
    * 获取模块树
    */
-  async getModuleTree(userId: number = 0): Promise<GetModuleTreeResponse> {
-    const req: GetModuleTreeRequest = { user_id: userId }
-    return getModuleClient().GetModuleTree(req)
+  async getModuleTree(metadata?: Metadata): Promise<GetModuleTreeResponse> {
+    const req: GetModuleTreeRequest = {}
+    return getModuleClient().GetModuleTree(req, metadata)
   },
 
   /**
    * 获取单个模块
    */
-  async getModule(id: number): Promise<GetModuleResponse> {
+  async getModule(id: number, metadata?: Metadata): Promise<GetModuleResponse> {
     const req: GetModuleRequest = { id }
-    return getModuleClient().GetModule(req)
+    return getModuleClient().GetModule(req, metadata)
   },
 
   /**
    * 获取面包屑导航
    */
-  async getBreadcrumbs(moduleId: number): Promise<GetBreadcrumbsResponse> {
+  async getBreadcrumbs(moduleId: number, metadata?: Metadata): Promise<GetBreadcrumbsResponse> {
     const req: GetBreadcrumbsRequest = { module_id: moduleId }
-    return getModuleClient().GetBreadcrumbs(req)
+    return getModuleClient().GetBreadcrumbs(req, metadata)
   },
 
   /**
@@ -57,17 +59,14 @@ export const moduleService = {
     name: string,
     description: string,
     parentId: number,
-    userId: number,
-    userRole: string,
+    metadata?: Metadata,
   ): Promise<CreateModuleResponse> {
     const req: CreateModuleRequest = {
       name,
       description,
       parent_id: parentId,
-      user_id: userId,
-      user_role: userRole,
     }
-    return getModuleClient().CreateModule(req)
+    return getModuleClient().CreateModule(req, metadata)
   },
 
   /**
@@ -78,18 +77,15 @@ export const moduleService = {
     name: string,
     description: string,
     parentId: number,
-    userId: number,
-    userRole: string,
+    metadata?: Metadata,
   ): Promise<UpdateModuleResponse> {
     const req: UpdateModuleRequest = {
       id,
       name,
       description,
       parent_id: parentId,
-      user_id: userId,
-      user_role: userRole,
     }
-    return getModuleClient().UpdateModule(req)
+    return getModuleClient().UpdateModule(req, metadata)
   },
 
   /**
@@ -97,15 +93,10 @@ export const moduleService = {
    */
   async deleteModule(
     id: number,
-    userId: number,
-    userRole: string,
+    metadata?: Metadata,
   ): Promise<DeleteModuleResponse> {
-    const req: DeleteModuleRequest = {
-      id,
-      user_id: userId,
-      user_role: userRole,
-    }
-    return getModuleClient().DeleteModule(req)
+    const req: DeleteModuleRequest = { id }
+    return getModuleClient().DeleteModule(req, metadata)
   },
 
   /**
@@ -113,15 +104,10 @@ export const moduleService = {
    */
   async getModerators(
     moduleId: number,
-    userId: number,
-    userRole: string,
+    metadata?: Metadata,
   ): Promise<GetModeratorsResponse> {
-    const req: GetModeratorsRequest = {
-      module_id: moduleId,
-      user_id: userId,
-      user_role: userRole,
-    }
-    return getModuleClient().GetModerators(req)
+    const req: GetModeratorsRequest = { module_id: moduleId }
+    return getModuleClient().GetModerators(req, metadata)
   },
 
   /**
@@ -131,17 +117,14 @@ export const moduleService = {
     moduleId: number,
     targetUserId: number,
     role: string,
-    userId: number,
-    userRole: string,
+    metadata?: Metadata,
   ): Promise<AddModeratorResponse> {
     const req: GrpcAddModeratorRequest = {
       module_id: moduleId,
       target_user_id: targetUserId,
       role,
-      user_id: userId,
-      user_role: userRole,
     }
-    return getModuleClient().AddModerator(req)
+    return getModuleClient().AddModerator(req, metadata)
   },
 
   /**
@@ -150,16 +133,13 @@ export const moduleService = {
   async removeModerator(
     moduleId: number,
     targetUserId: number,
-    userId: number,
-    userRole: string,
+    metadata?: Metadata,
   ): Promise<RemoveModeratorResponse> {
     const req: RemoveModeratorRequest = {
       module_id: moduleId,
       target_user_id: targetUserId,
-      user_id: userId,
-      user_role: userRole,
     }
-    return getModuleClient().RemoveModerator(req)
+    return getModuleClient().RemoveModerator(req, metadata)
   },
 
   /**
@@ -168,14 +148,13 @@ export const moduleService = {
   async handleLock(
     moduleId: number,
     action: string,
-    userId: number,
+    metadata?: Metadata,
   ): Promise<HandleLockResponse> {
     const req: HandleLockRequest = {
       module_id: moduleId,
       action,
-      user_id: userId,
     }
-    return getModuleClient().HandleLock(req)
+    return getModuleClient().HandleLock(req, metadata)
   },
 }
 

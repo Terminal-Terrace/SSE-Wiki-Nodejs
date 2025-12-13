@@ -1,6 +1,7 @@
 import type { Context } from 'koa'
 import { articleService } from '../../service/article'
 import { userAggregatorService } from '../../service/user-aggregator'
+import { createMetadataFromContext } from '../../utils/grpc-metadata'
 import {
   addCollaboratorSchema,
   createArticleSchema,
@@ -117,15 +118,10 @@ export const articleController = {
         return success(ctx, { articles: [], article_id: [] })
       }
 
-      const UserNumId = Number.parseInt(userId, 10)
-
-      if (Number.isNaN(UserNumId)) {
-        return error(ctx, 1, '无效的用户ID')
-      }
-      const { userRole } = getUserInfo(ctx)
+      const metadata = createMetadataFromContext(ctx)
 
       const articlePromises = articleIds.map(articleId =>
-        articleService.getArticle(articleId, UserNumId, userRole),
+        articleService.getArticle(articleId, metadata),
       )
 
       const articlesResponses = await Promise.all(articlePromises)
@@ -158,8 +154,8 @@ export const articleController = {
         return error(ctx, 1, '无效的文章ID')
       }
 
-      const { userId, userRole } = getUserInfo(ctx)
-      const response = await articleService.getArticle(id, userId, userRole)
+      const metadata = createMetadataFromContext(ctx)
+      const response = await articleService.getArticle(id, metadata)
       const article = response.article as Record<string, any>
 
       // 收集所有需要聚合的用户 ID
@@ -365,18 +361,18 @@ export const articleController = {
     }
 
     try {
-      const { userId, userRole } = getUserInfo(ctx)
+      const { userId } = getUserInfo(ctx)
       if (!userId) {
         return error(ctx, 401, '未登录')
       }
 
+      const metadata = createMetadataFromContext(ctx)
       const response = await articleService.createSubmission(
         articleId,
         result.data.content,
         result.data.commit_message,
         result.data.base_version_id,
-        userId,
-        userRole,
+        metadata,
       )
 
       // Handle conflict response
@@ -420,16 +416,17 @@ export const articleController = {
     }
 
     try {
-      const { userId, userRole } = getUserInfo(ctx)
+      const { userId } = getUserInfo(ctx)
       if (!userId) {
         return error(ctx, 401, '未登录')
       }
 
-      await articleService.updateBasicInfo(articleId, userId, userRole, {
+      const metadata = createMetadataFromContext(ctx)
+      await articleService.updateBasicInfo(articleId, {
         title: result.data.title,
         tags: result.data.tags,
         isReviewRequired: result.data.is_review_required,
-      })
+      }, metadata)
       success(ctx, { message: '更新成功' })
     }
     catch (err: any) {
@@ -451,8 +448,8 @@ export const articleController = {
     }
 
     try {
-      const { userId, userRole } = getUserInfo(ctx)
-      const response = await articleService.getCollaborators(articleId, userId, userRole)
+      const metadata = createMetadataFromContext(ctx)
+      const response = await articleService.getCollaborators(articleId, metadata)
 
       // 使用 UserAggregatorService 聚合用户信息（添加 avatar）
       const enrichedCollaborators = await userAggregatorService.enrichCollaborators(
@@ -491,7 +488,7 @@ export const articleController = {
     }
 
     try {
-      const { userId, userRole } = getUserInfo(ctx)
+      const { userId } = getUserInfo(ctx)
       if (!userId) {
         return error(ctx, 401, '未登录')
       }
@@ -502,12 +499,12 @@ export const articleController = {
         return error(ctx, 404, '目标用户不存在')
       }
 
+      const metadata = createMetadataFromContext(ctx)
       await articleService.addCollaborator(
         articleId,
         result.data.user_id,
         result.data.role,
-        userId,
-        userRole,
+        metadata,
       )
       success(ctx, { message: '添加成功' })
     }
@@ -529,17 +526,53 @@ export const articleController = {
     }
 
     try {
-      const { userId, userRole } = getUserInfo(ctx)
+      const { userId } = getUserInfo(ctx)
       if (!userId) {
         return error(ctx, 401, '未登录')
       }
 
-      await articleService.removeCollaborator(articleId, targetUserId, userId, userRole)
+      const metadata = createMetadataFromContext(ctx)
+      await articleService.removeCollaborator(articleId, targetUserId, metadata)
       success(ctx, { message: '移除成功' })
     }
     catch (err: any) {
       console.error('[removeCollaborator] gRPC error:', err)
       error(ctx, 0, err.details || err.message || '移除协作者失败')
+    }
+  },
+
+  /**
+   * 删除文章
+   * DELETE /api/v1/articles/:id
+   *
+   * 权限要求：Global_Admin 或 Author/Admin 可删除
+   */
+  async deleteArticle(ctx: Context) {
+    const articleId = Number.parseInt(ctx.params.id, 10)
+    if (Number.isNaN(articleId)) {
+      return error(ctx, 1, '无效的文章ID')
+    }
+
+    try {
+      const { userId } = getUserInfo(ctx)
+      if (!userId) {
+        return error(ctx, 401, '未登录')
+      }
+
+      const metadata = createMetadataFromContext(ctx)
+      const response = await articleService.deleteArticle(articleId, metadata)
+      success(ctx, { message: response.message })
+    }
+    catch (err: any) {
+      console.error('[deleteArticle] gRPC error:', err)
+      // 处理权限错误
+      if (err.code === 7) { // PERMISSION_DENIED
+        return error(ctx, 403, '权限不足：只有全局管理员、文章作者或管理员可以删除文章')
+      }
+      if (err.code === 5) { // NOT_FOUND
+        return error(ctx, 404, '文章不存在')
+      }
+      error(ctx, 0, err.details || err.message || '删除文章失败')
     }
   },
 }

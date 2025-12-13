@@ -22,7 +22,7 @@ app.use(async (ctx, next) => {
   if (allowedOrigins.includes(origin)) {
     ctx.set('Access-Control-Allow-Origin', origin)
   }
-  ctx.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+  ctx.set('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS')
   ctx.set('Access-Control-Allow-Headers', 'Origin, Content-Type, Accept, Authorization')
   ctx.set('Access-Control-Allow-Credentials', 'true')
 
