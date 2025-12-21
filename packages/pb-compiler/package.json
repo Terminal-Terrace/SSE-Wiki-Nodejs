@@ -1,7 +1,7 @@
 {
   "name": "@sse-wiki/pb-compiler",
   "type": "module",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "ProtoBuf 编译器",
   "author": "",
   "license": "ISC",
