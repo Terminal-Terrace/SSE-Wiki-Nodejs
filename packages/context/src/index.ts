@@ -12,5 +12,6 @@ export function getCtx(): Context {
   if (!store) {
     throw new Error('No context available')
   }
+
   return store
 }
