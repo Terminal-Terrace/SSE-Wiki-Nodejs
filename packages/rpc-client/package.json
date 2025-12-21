@@ -1,7 +1,7 @@
 {
   "name": "@sse-wiki/rpc-client",
   "type": "module",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "RpcClient的运行时",
   "author": "",
   "license": "ISC",

@@ -1,3 +1,13 @@
+## 0.1.2 (2025-12-21)
+
+### 🩹 Fixes
+
+- app ([ee1fc7f](https://github.com/Terminal-Terrace/SSE-Wiki-Nodejs/commit/ee1fc7f))
+
+### ❤️ Thank You
+
+- water
+
 ## 0.1.1 (2025-12-21)
 
 ### 🩹 Fixes
