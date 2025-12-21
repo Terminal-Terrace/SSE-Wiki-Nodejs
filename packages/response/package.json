@@ -1,7 +1,7 @@
 {
   "name": "@sse-wiki/response",
   "type": "module",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Response package for SSE Wiki",
   "author": "",
   "license": "ISC",
