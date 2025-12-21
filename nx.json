@@ -26,7 +26,10 @@
     "projects": ["packages/*"],
     "version": {
       "conventionalCommits": true,
-      "fallbackCurrentVersionResolver": "disk"
+      "fallbackCurrentVersionResolver": "disk",
+      "generatorOptions": {
+        "updateDependents": "auto"
+      }
     },
     "changelog": {
       "automaticFromRef": true,
