@@ -10,6 +10,7 @@ export interface ModuleTreeNode {
   owner_id: number
   is_moderator: boolean
   children: ModuleTreeNode[]
+  role: string
 }
 
 export interface Module {
@@ -41,7 +42,7 @@ export interface LockInfo {
 }
 
 export interface GetModuleTreeRequest {
-  user_id: number
+
 }
 
 export interface GetModuleTreeResponse {
@@ -68,8 +69,6 @@ export interface CreateModuleRequest {
   name: string
   description: string
   parent_id: number
-  user_id: number
-  user_role: string
 }
 
 export interface CreateModuleResponse {
@@ -81,8 +80,6 @@ export interface UpdateModuleRequest {
   name: string
   description: string
   parent_id: number
-  user_id: number
-  user_role: string
 }
 
 export interface UpdateModuleResponse {
@@ -91,8 +88,6 @@ export interface UpdateModuleResponse {
 
 export interface DeleteModuleRequest {
   id: number
-  user_id: number
-  user_role: string
 }
 
 export interface DeleteModuleResponse {
@@ -101,8 +96,6 @@ export interface DeleteModuleResponse {
 
 export interface GetModeratorsRequest {
   module_id: number
-  user_id: number
-  user_role: string
 }
 
 export interface GetModeratorsResponse {
@@ -113,8 +106,6 @@ export interface AddModeratorRequest {
   module_id: number
   target_user_id: number
   role: string
-  user_id: number
-  user_role: string
 }
 
 export interface AddModeratorResponse {
@@ -124,8 +115,6 @@ export interface AddModeratorResponse {
 export interface RemoveModeratorRequest {
   module_id: number
   target_user_id: number
-  user_id: number
-  user_role: string
 }
 
 export interface RemoveModeratorResponse {
@@ -135,7 +124,6 @@ export interface RemoveModeratorResponse {
 export interface HandleLockRequest {
   module_id: number
   action: string
-  user_id: number
 }
 
 export interface HandleLockResponse {

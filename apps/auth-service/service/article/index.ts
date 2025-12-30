@@ -1,9 +1,12 @@
+import type { Metadata } from '@sse-wiki/rpc-client'
 import type {
   AddCollaboratorResponse,
   CreateArticleRequest,
   CreateArticleResponse,
   CreateSubmissionRequest,
   CreateSubmissionResponse,
+  DeleteArticleRequest,
+  DeleteArticleResponse,
   GetArticleFavouritesRequest,
   GetArticleFavouritesResponse,
   GetArticleRequest,
@@ -50,18 +53,14 @@ export const articleService = {
 
   /**
    * 获取文章详情
+   * 用户信息通过 JWT metadata 传递
    */
   async getArticle(
     id: number,
-    userId: number = 0,
-    userRole: string = '',
+    metadata?: Metadata,
   ): Promise<GetArticleResponse> {
-    const req: GetArticleRequest = {
-      id,
-      user_id: userId,
-      user_role: userRole,
-    }
-    return getArticleClient().GetArticle(req)
+    const req: GetArticleRequest = { id }
+    return getArticleClient().GetArticle(req, metadata)
   },
 
   /**
@@ -130,43 +129,39 @@ export const articleService = {
 
   /**
    * 创建提交
+   * 用户信息通过 JWT metadata 传递
    */
   async createSubmission(
     articleId: number,
     content: string,
     commitMessage: string,
     baseVersionId: number,
-    userId: number,
-    userRole: string,
+    metadata?: Metadata,
   ): Promise<CreateSubmissionResponse> {
     const req: CreateSubmissionRequest = {
       article_id: articleId,
       content,
       commit_message: commitMessage,
       base_version_id: baseVersionId,
-      user_id: userId,
-      user_role: userRole,
     }
-    return getArticleClient().CreateSubmission(req)
+    return getArticleClient().CreateSubmission(req, metadata)
   },
 
   /**
    * 更新文章基础信息
+   * 用户信息通过 JWT metadata 传递
    */
   async updateBasicInfo(
     articleId: number,
-    userId: number,
-    userRole: string,
     options: {
       title?: string
       tags?: string[]
       isReviewRequired?: boolean
     },
+    metadata?: Metadata,
   ): Promise<UpdateBasicInfoResponse> {
     const req: UpdateBasicInfoRequest = {
       article_id: articleId,
-      user_id: userId,
-      user_role: userRole,
       title: options.title || '',
       tags: options.tags || [],
       is_review_required: options.isReviewRequired || false,
@@ -174,61 +169,66 @@ export const articleService = {
       has_tags: options.tags !== undefined,
       has_is_review_required: options.isReviewRequired !== undefined,
     }
-    return getArticleClient().UpdateBasicInfo(req)
+    return getArticleClient().UpdateBasicInfo(req, metadata)
   },
 
   /**
    * 获取文章协作者列表
+   * 用户信息通过 JWT metadata 传递
    */
   async getCollaborators(
     articleId: number,
-    userId: number,
-    userRole: string,
+    metadata?: Metadata,
   ): Promise<GetCollaboratorsResponse> {
-    const req: GetCollaboratorsRequest = {
-      article_id: articleId,
-      user_id: userId,
-      user_role: userRole,
-    }
-    return getArticleClient().GetCollaborators(req)
+    const req: GetCollaboratorsRequest = { article_id: articleId }
+    return getArticleClient().GetCollaborators(req, metadata)
   },
 
   /**
    * 添加协作者
+   * 用户信息通过 JWT metadata 传递
    */
   async addCollaborator(
     articleId: number,
     targetUserId: number,
     role: string,
-    userId: number,
-    userRole: string,
+    metadata?: Metadata,
   ): Promise<AddCollaboratorResponse> {
     const req: GrpcAddCollaboratorRequest = {
       article_id: articleId,
       target_user_id: targetUserId,
       role,
-      user_id: userId,
-      user_role: userRole,
     }
-    return getArticleClient().AddCollaborator(req)
+    return getArticleClient().AddCollaborator(req, metadata)
   },
 
   /**
    * 移除协作者
+   * 用户信息通过 JWT metadata 传递
    */
   async removeCollaborator(
     articleId: number,
     targetUserId: number,
-    userId: number,
-    userRole: string,
+    metadata?: Metadata,
   ): Promise<RemoveCollaboratorResponse> {
     const req: RemoveCollaboratorRequest = {
       article_id: articleId,
       target_user_id: targetUserId,
-      user_id: userId,
-      user_role: userRole,
     }
-    return getArticleClient().RemoveCollaborator(req)
+    return getArticleClient().RemoveCollaborator(req, metadata)
+  },
+
+  /**
+   * 删除文章
+   * 权限要求：Global_Admin 或 Author/Admin 可删除
+   * 用户信息通过 JWT metadata 传递
+   */
+  async deleteArticle(
+    articleId: number,
+    metadata?: Metadata,
+  ): Promise<DeleteArticleResponse> {
+    const req: DeleteArticleRequest = { article_id: articleId }
+    return getArticleClient().DeleteArticle(req, metadata)
   },
 }
 

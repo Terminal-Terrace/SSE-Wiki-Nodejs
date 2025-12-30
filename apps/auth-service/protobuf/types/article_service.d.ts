@@ -28,6 +28,8 @@ export interface Article {
   created_at: string
   updated_at: string
   history: HistoryEntry[]
+  is_author: boolean
+  can_delete: boolean
 }
 
 export interface HistoryEntry {
@@ -117,8 +119,6 @@ export interface GetArticlesByModuleResponse {
 
 export interface GetArticleRequest {
   id: number
-  user_id: number
-  user_role: string
 }
 
 export interface GetArticleResponse {
@@ -169,8 +169,6 @@ export interface CreateSubmissionRequest {
   content: string
   commit_message: string
   base_version_id: number
-  user_id: number
-  user_role: string
 }
 
 export interface CreateSubmissionResponse {
@@ -190,8 +188,6 @@ export interface UpdateBasicInfoRequest {
   has_title: boolean
   has_tags: boolean
   has_is_review_required: boolean
-  user_id: number
-  user_role: string
 }
 
 export interface UpdateBasicInfoResponse {
@@ -202,8 +198,6 @@ export interface AddCollaboratorRequest {
   article_id: number
   target_user_id: number
   role: string
-  user_id: number
-  user_role: string
 }
 
 export interface AddCollaboratorResponse {
@@ -219,8 +213,6 @@ export interface ArticleCollaboratorInfo {
 
 export interface GetCollaboratorsRequest {
   article_id: number
-  user_id: number
-  user_role: string
 }
 
 export interface GetCollaboratorsResponse {
@@ -230,12 +222,19 @@ export interface GetCollaboratorsResponse {
 export interface RemoveCollaboratorRequest {
   article_id: number
   target_user_id: number
-  user_id: number
-  user_role: string
 }
 
 export interface RemoveCollaboratorResponse {
 
+}
+
+export interface DeleteArticleRequest {
+  article_id: number
+}
+
+export interface DeleteArticleResponse {
+  success: boolean
+  message: string
 }
 
 export interface GetArticleFavouritesRequest {

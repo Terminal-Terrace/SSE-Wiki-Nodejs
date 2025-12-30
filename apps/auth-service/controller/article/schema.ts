@@ -49,10 +49,13 @@ export type UpdateBasicInfoRequest = z.infer<typeof updateBasicInfoSchema>
 
 /**
  * 添加协作者请求
+ * 注意：owner 角色已移除，文章作者通过 created_by 字段判断
+ * admin: 管理员协作者，可以编辑、审核、删除、管理协作者
+ * moderator: 协作者，可以编辑、审核
  */
 export const addCollaboratorSchema = z.object({
   user_id: z.number().int().positive(),
-  role: z.enum(['owner', 'moderator']),
+  role: z.enum(['admin', 'moderator']),
 })
 
 export type AddCollaboratorRequest = z.infer<typeof addCollaboratorSchema>

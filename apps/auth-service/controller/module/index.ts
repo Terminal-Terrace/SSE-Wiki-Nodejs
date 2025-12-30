@@ -1,6 +1,7 @@
 import type { Context } from 'koa'
 import { moduleService } from '../../service/module'
 import { userAggregatorService } from '../../service/user-aggregator'
+import { createMetadataFromContext } from '../../utils/grpc-metadata'
 import {
   addModeratorSchema,
   createModuleSchema,
@@ -46,8 +47,8 @@ export const moduleController = {
    */
   async getModuleTree(ctx: Context) {
     try {
-      const { userId } = getUserInfo(ctx)
-      const response = await moduleService.getModuleTree(userId)
+      const metadata = createMetadataFromContext(ctx)
+      const response = await moduleService.getModuleTree(metadata)
       success(ctx, response.tree)
     }
     catch (err: any) {
@@ -67,7 +68,8 @@ export const moduleController = {
         return error(ctx, 1, '无效的模块ID')
       }
 
-      const response = await moduleService.getModule(id)
+      const metadata = createMetadataFromContext(ctx)
+      const response = await moduleService.getModule(id, metadata)
       success(ctx, response.module)
     }
     catch (err: any) {
@@ -87,7 +89,8 @@ export const moduleController = {
         return error(ctx, 1, '无效的模块ID')
       }
 
-      const response = await moduleService.getBreadcrumbs(id)
+      const metadata = createMetadataFromContext(ctx)
+      const response = await moduleService.getBreadcrumbs(id, metadata)
       success(ctx, response.breadcrumbs)
     }
     catch (err: any) {
@@ -107,17 +110,17 @@ export const moduleController = {
     }
 
     try {
-      const { userId, userRole } = getUserInfo(ctx)
+      const { userId } = getUserInfo(ctx)
       if (!userId) {
         return error(ctx, 401, '未登录')
       }
 
+      const metadata = createMetadataFromContext(ctx)
       const response = await moduleService.createModule(
         result.data.name,
         result.data.description,
         result.data.parent_id || 0,
-        userId,
-        userRole,
+        metadata,
       )
       success(ctx, response.module)
     }
@@ -143,18 +146,18 @@ export const moduleController = {
     }
 
     try {
-      const { userId, userRole } = getUserInfo(ctx)
+      const { userId } = getUserInfo(ctx)
       if (!userId) {
         return error(ctx, 401, '未登录')
       }
 
+      const metadata = createMetadataFromContext(ctx)
       await moduleService.updateModule(
         id,
         result.data.name,
         result.data.description,
         result.data.parent_id || 0,
-        userId,
-        userRole,
+        metadata,
       )
       success(ctx, { message: '更新成功' })
     }
@@ -175,12 +178,13 @@ export const moduleController = {
     }
 
     try {
-      const { userId, userRole } = getUserInfo(ctx)
+      const { userId } = getUserInfo(ctx)
       if (!userId) {
         return error(ctx, 401, '未登录')
       }
 
-      const response = await moduleService.deleteModule(id, userId, userRole)
+      const metadata = createMetadataFromContext(ctx)
+      const response = await moduleService.deleteModule(id, metadata)
       success(ctx, { deleted_modules: response.deleted_modules })
     }
     catch (err: any) {
@@ -202,8 +206,8 @@ export const moduleController = {
     }
 
     try {
-      const { userId, userRole } = getUserInfo(ctx)
-      const response = await moduleService.getModerators(id, userId, userRole)
+      const metadata = createMetadataFromContext(ctx)
+      const response = await moduleService.getModerators(id, metadata)
 
       // 使用 UserAggregatorService 聚合用户信息（添加 avatar）
       const enrichedModerators = await userAggregatorService.enrichModerators(
@@ -238,7 +242,7 @@ export const moduleController = {
     }
 
     try {
-      const { userId, userRole } = getUserInfo(ctx)
+      const { userId } = getUserInfo(ctx)
       if (!userId) {
         return error(ctx, 401, '未登录')
       }
@@ -249,21 +253,14 @@ export const moduleController = {
         return error(ctx, 404, '目标用户不存在')
       }
 
-      // 角色权限验证：moderator 不能添加 admin
-      // 注意：系统 admin 可以添加任意角色，这里的 userRole 是系统角色
-      // 模块级别的权限验证在 Go 后端处理
-      if (userRole !== 'admin' && result.data.role === 'admin') {
-        // 需要先检查当前用户在该模块的角色
-        // 如果当前用户是模块的 moderator，则不能添加 admin
-        // 这个逻辑在 Go 后端会处理，这里只做基本验证
-      }
+      // 角色权限验证在 Go 后端处理（通过 JWT 获取用户角色）
 
+      const metadata = createMetadataFromContext(ctx)
       await moduleService.addModerator(
         id,
         result.data.user_id,
         result.data.role,
-        userId,
-        userRole,
+        metadata,
       )
       success(ctx, { message: '添加成功' })
     }
@@ -285,12 +282,13 @@ export const moduleController = {
     }
 
     try {
-      const { userId, userRole } = getUserInfo(ctx)
+      const { userId } = getUserInfo(ctx)
       if (!userId) {
         return error(ctx, 401, '未登录')
       }
 
-      await moduleService.removeModerator(moduleId, targetUserId, userId, userRole)
+      const metadata = createMetadataFromContext(ctx)
+      await moduleService.removeModerator(moduleId, targetUserId, metadata)
       success(ctx, { message: '移除成功' })
     }
     catch (err: any) {
@@ -315,8 +313,9 @@ export const moduleController = {
         return error(ctx, 401, '未登录')
       }
 
+      const metadata = createMetadataFromContext(ctx)
       // moduleId is 0 for global lock
-      const response = await moduleService.handleLock(0, result.data.action, userId)
+      const response = await moduleService.handleLock(0, result.data.action, metadata)
       success(ctx, response.lock_info)
     }
     catch (err: any) {

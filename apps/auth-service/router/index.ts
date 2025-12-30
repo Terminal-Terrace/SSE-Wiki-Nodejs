@@ -32,12 +32,14 @@ moduleRouter.get('/:id/articles', articleController.getArticlesByModule)
 // 管理功能（需要认证）
 moduleRouter.post('/', moduleController.createModule)
 moduleRouter.put('/:id', moduleController.updateModule)
-moduleRouter.delete('/:id', moduleController.deleteModule)
 
-// 协作者管理（需要认证）
+// 协作者管理（需要认证）- 带子路径的路由放在纯动态路由前面
 moduleRouter.get('/:id/moderators', moduleController.getModerators)
 moduleRouter.post('/:id/moderators', moduleController.addModerator)
 moduleRouter.delete('/:id/moderators/:userId', moduleController.removeModerator)
+
+// 删除模块放最后（纯动态路由）
+moduleRouter.delete('/:id', moduleController.deleteModule)
 
 // 编辑锁（需要认证）
 moduleRouter.post('/lock', moduleController.handleLock)
@@ -72,6 +74,7 @@ articleRouter.delete('/:id/collaborators/:userId', articleController.removeColla
 articleRouter.get('/:id', articleController.getArticle)
 articleRouter.post('/:id/submissions', articleController.createSubmission)
 articleRouter.patch('/:id/basic-info', articleController.updateBasicInfo)
+articleRouter.delete('/:id', articleController.deleteArticle)
 
 // Version 路由 - /api/v1/versions/*
 const versionRouter = new Router({ prefix: '/api/v1/versions' })
