@@ -1,7 +1,7 @@
 {
   "name": "@sse-wiki/template",
   "type": "module",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Logger package for SSE Wiki",
   "author": "",
   "license": "ISC",

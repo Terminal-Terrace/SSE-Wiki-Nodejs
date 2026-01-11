@@ -1,3 +1,21 @@
+## 0.1.3 (2026-01-11)
+
+### 🚀 Features
+
+- 为各个接口增加用户信息聚合 ([1564d03](https://github.com/Terminal-Terrace/SSE-Wiki-Nodejs/commit/1564d03))
+- 更新proto, 移除所有user_id, user_role的透传 ([3952305](https://github.com/Terminal-Terrace/SSE-Wiki-Nodejs/commit/3952305))
+- 更新metadata, 支持传递jwt ([2c15526](https://github.com/Terminal-Terrace/SSE-Wiki-Nodejs/commit/2c15526))
+- 更新proto ([37821c7](https://github.com/Terminal-Terrace/SSE-Wiki-Nodejs/commit/37821c7))
+- 更新文章审核部分字段 ([3ca7068](https://github.com/Terminal-Terrace/SSE-Wiki-Nodejs/commit/3ca7068))
+
+### 🩹 Fixes
+
+- 更新pnpm-lock.yaml ([5809e90](https://github.com/Terminal-Terrace/SSE-Wiki-Nodejs/commit/5809e90))
+
+### ❤️ Thank You
+
+- jerrylingj
+
 ## 0.1.2 (2025-12-21)
 
 ### 🩹 Fixes

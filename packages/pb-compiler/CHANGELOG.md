@@ -1,3 +1,17 @@
+## 0.1.3 (2026-01-11)
+
+### 🚀 Features
+
+- 更新文章审核部分字段 ([3ca7068](https://github.com/Terminal-Terrace/SSE-Wiki-Nodejs/commit/3ca7068))
+
+### 🩹 Fixes
+
+- 更新pnpm-lock.yaml ([5809e90](https://github.com/Terminal-Terrace/SSE-Wiki-Nodejs/commit/5809e90))
+
+### ❤️ Thank You
+
+- jerrylingj
+
 ## 0.1.2 (2025-12-21)
 
 ### 🩹 Fixes
