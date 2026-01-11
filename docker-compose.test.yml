@@ -7,11 +7,11 @@ services:
     environment:
       MONGO_INITDB_DATABASE: sse_wiki_test
     ports:
-      - "27018:27017"
+      - '27018:27017'
     volumes:
       - mongodb-test-data:/data/db
     healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      test: [CMD, mongosh, --eval, "db.adminCommand('ping')"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -24,4 +24,3 @@ volumes:
 networks:
   test-network:
     driver: bridge
-
