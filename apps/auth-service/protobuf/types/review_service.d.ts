@@ -73,9 +73,6 @@ export interface Submission {
 }
 
 export interface ConflictData {
-  base_content: string
-  their_content: string
-  our_content: string
   has_conflict: boolean
   base_version_number: number
   current_version_number: number
@@ -100,6 +97,8 @@ export interface ReviewDetail {
   proposed_version: Version
   base_version: Version
   article: Article
+  current_version: Version
+  conflict_data: ConflictData
 }
 
 export interface GetReviewDetailResponse {

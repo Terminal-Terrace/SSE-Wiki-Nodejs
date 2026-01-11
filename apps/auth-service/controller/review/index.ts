@@ -93,6 +93,9 @@ export const reviewController = {
         const enrichedBaseVersion = detail.base_version
           ? await userAggregatorService.enrichObject(detail.base_version, versionConfig)
           : null
+        const enrichedCurrentVersion = detail.current_version
+          ? await userAggregatorService.enrichObject(detail.current_version, versionConfig)
+          : null
 
         // 聚合文章的作者信息
         const enrichedArticle = detail.article
@@ -101,11 +104,22 @@ export const reviewController = {
             })
           : null
 
+        // 处理 conflict_data，填充 submitter_name
+        let enrichedConflictData = detail.conflict_data || null
+        if (enrichedConflictData && enrichedSubmission?.submitter) {
+          enrichedConflictData = {
+            ...enrichedConflictData,
+            submitter_name: enrichedSubmission.submitter.username || enrichedSubmission.submitter.name || '',
+          }
+        }
+
         success(ctx, {
           submission: enrichedSubmission,
           proposed_version: enrichedProposedVersion,
           base_version: enrichedBaseVersion,
+          current_version: enrichedCurrentVersion,
           article: enrichedArticle,
+          conflict_data: enrichedConflictData,
         })
       }
       else {

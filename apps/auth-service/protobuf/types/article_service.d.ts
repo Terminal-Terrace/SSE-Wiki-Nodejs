@@ -95,9 +95,6 @@ export interface Submission {
 }
 
 export interface ConflictData {
-  base_content: string
-  their_content: string
-  our_content: string
   has_conflict: boolean
   base_version_number: number
   current_version_number: number

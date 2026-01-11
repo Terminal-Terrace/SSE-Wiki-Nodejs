@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  mongodb-test:
+    image: mongo:7
+    container_name: sse-wiki-mongodb-test
+    environment:
+      MONGO_INITDB_DATABASE: sse_wiki_test
+    ports:
+      - '27018:27017'
+    volumes:
+      - mongodb-test-data:/data/db
+    healthcheck:
+      test: [CMD, mongosh, --eval, "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - test-network
+
+volumes:
+  mongodb-test-data:
+
+networks:
+  test-network:
+    driver: bridge

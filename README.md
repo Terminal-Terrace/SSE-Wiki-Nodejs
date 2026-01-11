@@ -2,6 +2,8 @@
 
 预计apps里使用koa框架
 
+## TODO
+
 ## 环境准备
 
 需要准备 MongoDB + Redis + OSS，注意有两个 **.env.example**, 在各自的app下面
@@ -210,7 +212,3 @@ SSE-Wiki-Nodejs/
 
 - 确保 `.env` 中的 `JWT_SECRET` 与 后端，并且不要添加引号（写成 `JWT_SECRET=xxx`）
 - 如果 `grpc` 连不上，排查终端是否配置了终端代理，因为 @grpc/grpc-js 会把 `localhost:50051/50052` 也走代理，导致连接失败。可以启动前执行`unset http_proxy https_proxy all_proxy` 取消代理。
-
-## TODO
-
-- 感觉node再开2个端口有点过度设计了。目前 Gateway 只保留一个 `apps/auth-service`，同时负责 auth 与 wiki 的 API 代理，端口暂时共用 3002。
