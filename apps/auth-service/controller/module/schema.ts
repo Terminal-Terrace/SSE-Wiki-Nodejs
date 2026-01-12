@@ -5,7 +5,7 @@ import { z } from 'zod'
  */
 export const createModuleSchema = z.object({
   name: z.string().min(1).max(100),
-  description: z.string().min(1).max(512),
+  description: z.string().max(512).optional(),
   parent_id: z.number().int().optional(),
 })
 
@@ -16,7 +16,7 @@ export type CreateModuleRequest = z.infer<typeof createModuleSchema>
  */
 export const updateModuleSchema = z.object({
   name: z.string().min(1).max(100),
-  description: z.string().min(1).max(512),
+  description: z.string().max(512).optional(),
   parent_id: z.number().int().optional(),
 })
 

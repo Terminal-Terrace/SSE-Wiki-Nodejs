@@ -67,7 +67,7 @@ export interface GetBreadcrumbsResponse {
 
 export interface CreateModuleRequest {
   name: string
-  description: string
+  description?: string
   parent_id: number
 }
 
@@ -78,7 +78,7 @@ export interface CreateModuleResponse {
 export interface UpdateModuleRequest {
   id: number
   name: string
-  description: string
+  description?: string
   parent_id: number
 }
 
