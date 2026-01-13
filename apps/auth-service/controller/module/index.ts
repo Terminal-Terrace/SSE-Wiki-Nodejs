@@ -115,10 +115,12 @@ export const moduleController = {
         return error(ctx, 401, '未登录')
       }
 
+      const description = result.data.description?.trim() ?? ''
+
       const metadata = createMetadataFromContext(ctx)
       const response = await moduleService.createModule(
         result.data.name,
-        result.data.description,
+        description,
         result.data.parent_id || 0,
         metadata,
       )
@@ -151,11 +153,13 @@ export const moduleController = {
         return error(ctx, 401, '未登录')
       }
 
+      const description = result.data.description?.trim() ?? ''
+
       const metadata = createMetadataFromContext(ctx)
       await moduleService.updateModule(
         id,
         result.data.name,
-        result.data.description,
+        description,
         result.data.parent_id || 0,
         metadata,
       )
